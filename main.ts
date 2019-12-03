@@ -16,7 +16,7 @@ function sendPacket(msg: Buffer, cmd: Commands): void {
         let checksum: number = 0
         packet.setUint8(0, 0xbb)
         packet.setUint8(1, 0x00)
-        packet.setUint8(2, 0xAA)
+        packet.setUint8(2, cmd)
         packet.write(3, msg)
 
         for (let index = 0; index < 15; index++) {
@@ -48,11 +48,11 @@ namespace Binbot {
     export function sendNumbers(x: number, y: number, z: number): void {
 
         let msg: Buffer = control.createBuffer(12)
-        msg.setNumber(NumberFormat.Int32BE, 0, x)
-        msg.setNumber(NumberFormat.Int32BE, 4, y)
-        msg.setNumber(NumberFormat.Int32BE, 8, z)
+        msg.setNumber(NumberFormat.Int32LE, 0, x)
+        msg.setNumber(NumberFormat.Int32LE, 4, y)
+        msg.setNumber(NumberFormat.Int32LE, 8, z)
 
-        sendPacket(msg,Commands.send3Numbers)
+        sendPacket(msg, Commands.send3Numbers)
         // Add code here
     }
 
@@ -65,13 +65,13 @@ namespace Binbot {
     //% block
     export function sendString(str: string): void {
 
-
-        let msg: Buffer = control.createBufferFromUTF8(str)
-        if (msg.length > 12) {
-            msg = msg.slice(0, 12)
+        let msg: Buffer = control.createBuffer(12)
+        let str_buf: Buffer = control.createBufferFromUTF8(str)
+        if (str_buf.length > 12) {
+            str_buf = str_buf.slice(0, 12)
         }
-
-        sendPacket(msg,Commands.send12Chars)
+        msg.write(0, str_buf)
+        sendPacket(msg, Commands.send12Chars)
 
     }
 
@@ -85,12 +85,15 @@ namespace Binbot {
     export function moveBinbot(x: number, y: number, z: number): void {
 
         let msg: Buffer = control.createBuffer(12)
-        msg.setNumber(NumberFormat.Int32BE, 0, x)
-        msg.setNumber(NumberFormat.Int32BE, 4, y)
-        msg.setNumber(NumberFormat.Int32BE, 8, z)
+        msg.setNumber(NumberFormat.Int32LE, 0, x)
+        msg.setNumber(NumberFormat.Int32LE, 4, y)
+        msg.setNumber(NumberFormat.Int32LE, 8, z)
 
         sendPacket(msg, Commands.controlBinbot)
         // Add code here
+
+
+
     }
 
     /**
