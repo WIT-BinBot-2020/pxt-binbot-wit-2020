@@ -1,18 +1,64 @@
 enum Commands {
-    testMessage = 0,
-    send12Chars = 1,
-    send3Numbers = 2,
-    controlBinbot = 3
+    CMD_TEST = 0,
+    CMD_SENDSTRING = 1,
+    CMD_SENDNUMBERS = 2,
+    CMD_CTRLOMNIDRIVE = 3,
+    CMD_REQUESTDISTANCESENSOR = 4,
+    CMD_SENDDISTANCESENSORVALUE = 5,
+
 }
 
+enum DistanceSensors {
+    FRONT = 0,
+    FRONT_LEFT = 1,
+    FRONT_RIGHT = 8,
+    LEFT_FRONT = 2,
+    LEFT_BACK = 3,
+    BACK_LEFT = 4,
+    BACK_RIGHT = 5,
+    RIGHT_BACK = 6,
+    RIGHT_FRONT = 7
+};
 
-function sendPacket(msg: Buffer, cmd: Commands): void {
+let receive_str: string
+let receive_num1: number
+let receive_num2: number
+let receive_num3: number
 
+function sendPacket(packet: Buffer): void {
+    radio.sendRawPacket(packet)
+}
+
+function createStringPacket(cmd: Commands, str: string): Buffer {
+
+    let msg: Buffer = control.createBuffer(12)
+    let str_buf: Buffer = control.createBufferFromUTF8(str)
+    if (str_buf.length > 12) {
+        str_buf = str_buf.slice(0, 12)
+    }
+    msg.write(0, str_buf)
+
+    return createPacket(cmd, msg)
+}
+
+function createNumberPacket(cmd: Commands, num1: number, num2: number, num3: number): Buffer {
+
+    let msg: Buffer = control.createBuffer(12)
+    msg.setNumber(NumberFormat.Int32LE, 0, num1)
+    msg.setNumber(NumberFormat.Int32LE, 4, num2)
+    msg.setNumber(NumberFormat.Int32LE, 8, num3)
+
+    return createPacket(cmd, msg)
+}
+
+function createPacket(cmd: Commands, msg: Buffer): Buffer {
+    let packet: Buffer = control.createBuffer(16)
     if (msg.length != 12) {
         console.log("wrong msg size")
+
     }
     else {
-        let packet: Buffer = control.createBuffer(16)
+
         let checksum: number = 0
         packet.setUint8(0, 0xbb)
         packet.setUint8(1, 0x00)
@@ -26,11 +72,9 @@ function sendPacket(msg: Buffer, cmd: Commands): void {
         packet.setUint8(15, checksum)
         console.log("Packet: " + packet.toHex())
 
-        radio.sendRawPacket(packet)
-
     }
+    return packet
 }
-
 
 
 /**
@@ -47,13 +91,8 @@ namespace Binbot {
     //% block
     export function sendNumbers(x: number, y: number, z: number): void {
 
-        let msg: Buffer = control.createBuffer(12)
-        msg.setNumber(NumberFormat.Int32LE, 0, x)
-        msg.setNumber(NumberFormat.Int32LE, 4, y)
-        msg.setNumber(NumberFormat.Int32LE, 8, z)
+        sendPacket(createNumberPacket(Commands.CMD_SENDNUMBERS, x, y, z))
 
-        sendPacket(msg, Commands.send3Numbers)
-        // Add code here
     }
 
     /**
@@ -65,13 +104,7 @@ namespace Binbot {
     //% block
     export function sendString(str: string): void {
 
-        let msg: Buffer = control.createBuffer(12)
-        let str_buf: Buffer = control.createBufferFromUTF8(str)
-        if (str_buf.length > 12) {
-            str_buf = str_buf.slice(0, 12)
-        }
-        msg.write(0, str_buf)
-        sendPacket(msg, Commands.send12Chars)
+        sendPacket(createStringPacket(Commands.CMD_SENDSTRING, str))
 
     }
 
@@ -84,17 +117,23 @@ namespace Binbot {
     //% block
     export function moveBinbot(x: number, y: number, z: number): void {
 
-        let msg: Buffer = control.createBuffer(12)
-        msg.setNumber(NumberFormat.Int32LE, 0, x)
-        msg.setNumber(NumberFormat.Int32LE, 4, y)
-        msg.setNumber(NumberFormat.Int32LE, 8, z)
-
-        sendPacket(msg, Commands.controlBinbot)
+        sendPacket(createNumberPacket(Commands.CMD_CTRLOMNIDRIVE, x, y, z))
         // Add code here
-
-
-
     }
+
+    /**
+* TODO: describe your function here
+* @param n describe parameter here, eg: 5
+* @param s describe parameter here, eg: "Hello"
+* @param e describe parameter here
+*/
+    //% block
+    export function requestSensor(sensor: DistanceSensors): void {
+
+        sendPacket(createNumberPacket(Commands.CMD_CTRLOMNIDRIVE, sensor, 0, 0))
+        // Add code here
+    }
+
 
     /**
 * TODO: describe your function here
@@ -116,7 +155,11 @@ namespace Binbot {
                 }
 
                 if (checksum == 0) {
-                    return buf.slice(3, 12).toString()
+                    receive_str = buf.slice(3, 12).toString()
+                    receive_num1 = buf.getNumber(NumberFormat.Int32LE, 3)
+                    receive_num2 = buf.getNumber(NumberFormat.Int32LE, 7)
+                    receive_num3 = buf.getNumber(NumberFormat.Int32LE, 11)
+                    return "Packet received"
                 }
                 else {
                     return "Error Checksum"
@@ -133,12 +176,4 @@ namespace Binbot {
 
     }
 
-    /**
-     * TODO: describe your function here
-     * @param value describe value here, eg: 5
-     */
-    //% block
-    export function fib(value: number): number {
-        return value <= 1 ? value : fib(value - 1) + fib(value - 2);
-    }
 }
