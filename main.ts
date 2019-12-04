@@ -130,7 +130,7 @@ namespace Binbot {
     //% block
     export function requestSensor(sensor: DistanceSensors): void {
 
-        sendPacket(createNumberPacket(Commands.CMD_CTRLOMNIDRIVE, sensor, 0, 0))
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTDISTANCESENSOR, sensor, 0, 0))
         // Add code here
     }
 
@@ -159,6 +159,11 @@ namespace Binbot {
                     receive_num1 = buf.getNumber(NumberFormat.Int32LE, 3)
                     receive_num2 = buf.getNumber(NumberFormat.Int32LE, 7)
                     receive_num3 = buf.getNumber(NumberFormat.Int32LE, 11)
+
+                    console.log(receive_str)
+                    console.log(receive_num1.toString())
+                    console.log(receive_num2.toString())
+                    console.log(receive_num3.toString())
                     return "Packet received"
                 }
                 else {
