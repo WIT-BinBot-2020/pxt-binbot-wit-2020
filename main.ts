@@ -76,6 +76,53 @@ function createPacket(cmd: Commands, msg: Buffer): Buffer {
     return packet
 }
 
+function receivePacket(timeout = 1000): Buffer {
+    let buf: Buffer = radio.readRawPacket()
+    let checksum: number = 0
+    let time: number = 0
+
+    while (buf.length == 0) {
+
+        if (timeout != 0) {
+            if (time < timeout) {
+                time = time + 10
+            }
+            else {
+                console.log("Timeout receiving Packet")
+                return null
+            }
+        }
+        basic.pause(10)
+        buf = radio.readRawPacket()
+    }
+    if (buf.length == 16) {
+        if (buf.getUint8(0) == 0xbb) {
+            console.log(buf.toHex())
+            for (let index = 0; index < 16; index++) {
+                checksum ^= buf[index]
+            }
+
+            if (checksum == 0) {
+                return buf.slice(3, 12)
+            }
+            else {
+                console.log("Error Checksum : " + checksum.toString())
+                return null
+            }
+        }
+        else {
+            console.log("Error Packetformat")
+            return null
+        }
+    }
+    else {
+        console.log("Error length:" + buf.length.toString())
+        return null
+    }
+
+
+}
+
 
 /**
  * Custom blocks
@@ -128,9 +175,26 @@ namespace Binbot {
 * @param e describe parameter here
 */
     //% block
-    export function requestSensor(sensor: DistanceSensors): void {
+    export function requestSensor(sensor: DistanceSensors): number {
 
+        let res: Buffer
         sendPacket(createNumberPacket(Commands.CMD_REQUESTDISTANCESENSOR, sensor, 0, 0))
+        res = receivePacket()
+
+        if (res != null) {
+            if (res.getNumber(NumberFormat.Int32LE, 0) == sensor) {
+                return res.getNumber(NumberFormat.Int32LE, 4)
+            }
+            else {
+                console.log("Error wrong sensor data")
+                return null
+            }
+
+        }
+        else {
+            console.log("Error requesting sensor data")
+            return null
+        }
         // Add code here
     }
 
@@ -144,41 +208,18 @@ namespace Binbot {
     //% block
     export function receiveString(): string {
 
-        let buf: Buffer = radio.readRawPacket()
-        let checksum: number = 0
+        let res: Buffer = receivePacket()
 
-        if (buf.length == 16) {
-            if (buf.getUint8(0) == 0xbb) {
-                console.log(buf.slice(3, 12).toHex())
-                for (let index = 0; index < 16; index++) {
-                    checksum ^= buf[index]
-                }
-
-                if (checksum == 0) {
-                    receive_str = buf.slice(3, 12).toString()
-                    receive_num1 = buf.getNumber(NumberFormat.Int32LE, 3)
-                    receive_num2 = buf.getNumber(NumberFormat.Int32LE, 7)
-                    receive_num3 = buf.getNumber(NumberFormat.Int32LE, 11)
-
-                    console.log(receive_str)
-                    console.log(receive_num1.toString())
-                    console.log(receive_num2.toString())
-                    console.log(receive_num3.toString())
-                    return "Packet received"
-                }
-                else {
-                    return "Error Checksum"
-                }
-            }
-            else {
-                return "Error Packetformat"
-            }
+        if (res != null) {
+            return res.toString()
         }
         else {
-            return "Error length"
+            console.log("Error receiving string")
+            return null
         }
 
-
     }
+
+
 
 }
