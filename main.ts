@@ -140,6 +140,7 @@ namespace Binbot {
                 checksum ^= packet[index]
             }
 
+
             packet.setUint8(15, checksum)
             console.log("Packet: " + packet.toHex())
 
@@ -190,7 +191,6 @@ namespace Binbot {
             console.log("Error length:" + buf.length.toString())
             return null
         }
-
 
     }
 
