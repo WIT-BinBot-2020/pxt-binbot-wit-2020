@@ -139,10 +139,9 @@ namespace Binbot {
             for (let index = 0; index < 15; index++) {
                 checksum ^= packet[index]
             }
-
-
             packet.setUint8(15, checksum)
             console.log("Packet: " + packet.toHex())
+
 
         }
         return packet
