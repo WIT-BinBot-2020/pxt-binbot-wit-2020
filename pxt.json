@@ -13,6 +13,7 @@
     "testFiles": [
         "test.ts"
     ],
+    "icon" : "icon.png",
     "public": true,
     "preferredEditor": "tsprj",
     "installedVersion": "workspace:82ca2294-916f-4027-b03c-9f8e94ffce82"
