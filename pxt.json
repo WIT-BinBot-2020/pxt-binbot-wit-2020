@@ -1,7 +1,7 @@
 {
     "name": "pxt-binbot-wit",
     "version": "0.0.5",
-    "description": "",
+    "description": "MakeCode extensions for WITs Binbot Project - BETA",
     "dependencies": {
         "core": "*",
         "radio": "*"
@@ -13,7 +13,7 @@
     "testFiles": [
         "test.ts"
     ],
-    "icon": "icon.png",
+    "icon": "https://raw.githubusercontent.com/robertsausg/pxt-binbot-wit/master/icon2.png",
     "public": true,
     "preferredEditor": "tsprj",
     "installedVersion": "workspace:82ca2294-916f-4027-b03c-9f8e94ffce82"
