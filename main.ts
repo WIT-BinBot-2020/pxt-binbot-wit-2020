@@ -20,146 +20,20 @@ enum DistanceSensors {
     RIGHT_FRONT = 7
 };
 
-let receive_str: string
-let receive_num1: number
-let receive_num2: number
-let receive_num3: number
-
-function sendPacket(packet: Buffer): void {
-    radio.sendRawPacket(packet)
-}
-
-function createStringPacket(cmd: Commands, str: string): Buffer {
-
-    let msg: Buffer = control.createBuffer(12)
-    let str_buf: Buffer = control.createBufferFromUTF8(str)
-    if (str_buf.length > 12) {
-        str_buf = str_buf.slice(0, 12)
-    }
-    msg.write(0, str_buf)
-
-    return createPacket(cmd, msg)
-}
-
-function createNumberPacket(cmd: Commands, num1: number, num2: number, num3: number): Buffer {
-
-    let msg: Buffer = control.createBuffer(12)
-    msg.setNumber(NumberFormat.Int32LE, 0, num1)
-    msg.setNumber(NumberFormat.Int32LE, 4, num2)
-    msg.setNumber(NumberFormat.Int32LE, 8, num3)
-
-    return createPacket(cmd, msg)
-}
-
-function createPacket(cmd: Commands, msg: Buffer): Buffer {
-    let packet: Buffer = control.createBuffer(16)
-    if (msg.length != 12) {
-        console.log("wrong msg size")
-
-    }
-    else {
-
-        let checksum: number = 0
-        packet.setUint8(0, 0xbb)
-        packet.setUint8(1, 0x00)
-        packet.setUint8(2, cmd)
-        packet.write(3, msg)
-
-        for (let index = 0; index < 15; index++) {
-            checksum ^= packet[index]
-        }
-
-        packet.setUint8(15, checksum)
-        console.log("Packet: " + packet.toHex())
-
-    }
-    return packet
-}
-
-function receivePacket(timeout = 1000): Buffer {
-    let buf: Buffer = radio.readRawPacket()
-    let checksum: number = 0
-    let time: number = 0
-
-    while (buf.length == 0) {
-
-        if (timeout != 0) {
-            if (time < timeout) {
-                time = time + 10
-            }
-            else {
-                console.log("Timeout receiving Packet")
-                return null
-            }
-        }
-        basic.pause(10)
-        buf = radio.readRawPacket()
-    }
-    if (buf.length == 16) {
-        if (buf.getUint8(0) == 0xbb) {
-            console.log(buf.toHex())
-            for (let index = 0; index < 16; index++) {
-                checksum ^= buf[index]
-            }
-
-            if (checksum == 0) {
-                return buf.slice(3, 12)
-            }
-            else {
-                console.log("Error Checksum : " + checksum.toString())
-                return null
-            }
-        }
-        else {
-            console.log("Error Packetformat")
-            return null
-        }
-    }
-    else {
-        console.log("Error length:" + buf.length.toString())
-        return null
-    }
-
-
-}
-
 
 /**
  * Custom blocks
  */
-//% weight=100 color=#0fbc11 icon=""
+//% weight=100 color=#0fbc11 icon=""
 namespace Binbot {
-    /**
-     * TODO: describe your function here
-     * @param n describe parameter here, eg: 5
-     * @param s describe parameter here, eg: "Hello"
-     * @param e describe parameter here
-     */
-    //% block
-    export function sendNumbers(x: number, y: number, z: number): void {
 
-        sendPacket(createNumberPacket(Commands.CMD_SENDNUMBERS, x, y, z))
 
-    }
 
     /**
- * TODO: describe your function here
- * @param n describe parameter here, eg: 5
- * @param s describe parameter here, eg: "Hello"
- * @param e describe parameter here
- */
-    //% block
-    export function sendString(str: string): void {
-
-        sendPacket(createStringPacket(Commands.CMD_SENDSTRING, str))
-
-    }
-
-    /**
-    * TODO: describe your function here
-    * @param n describe parameter here, eg: 5
-    * @param s describe parameter here, eg: "Hello"
-    * @param e describe parameter here
+    * Move Binbot
+    * @param x speed in x direction, eg: 100
+    * @param y speed in y direction, eg: 100
+    * @param z rotation speed
     */
     //% block
     export function moveBinbot(x: number, y: number, z: number): void {
@@ -169,11 +43,9 @@ namespace Binbot {
     }
 
     /**
-* TODO: describe your function here
-* @param n describe parameter here, eg: 5
-* @param s describe parameter here, eg: "Hello"
-* @param e describe parameter here
-*/
+    * Request Sensor data
+    * @param sensor sensor to request, eg: FRONT
+    */
     //% block
     export function requestSensor(sensor: DistanceSensors): number {
 
@@ -195,17 +67,21 @@ namespace Binbot {
             console.log("Error requesting sensor data")
             return null
         }
-        // Add code here
+    }
+
+    export function sendNumbers(x: number, y: number, z: number): void {
+
+        sendPacket(createNumberPacket(Commands.CMD_SENDNUMBERS, x, y, z))
+
     }
 
 
-    /**
-* TODO: describe your function here
-* @param n describe parameter here, eg: 5
-* @param s describe parameter here, eg: "Hello"
-* @param e describe parameter here
-*/
-    //% block
+    export function sendString(str: string): void {
+
+        sendPacket(createStringPacket(Commands.CMD_SENDSTRING, str))
+
+    }
+
     export function receiveString(): string {
 
         let res: Buffer = receivePacket()
@@ -215,6 +91,104 @@ namespace Binbot {
         }
         else {
             console.log("Error receiving string")
+            return null
+        }
+
+    }
+
+    function sendPacket(packet: Buffer): void {
+        radio.sendRawPacket(packet)
+    }
+
+    function createStringPacket(cmd: Commands, str: string): Buffer {
+
+        let msg: Buffer = control.createBuffer(12)
+        let str_buf: Buffer = control.createBufferFromUTF8(str)
+        if (str_buf.length > 12) {
+            str_buf = str_buf.slice(0, 12)
+        }
+        msg.write(0, str_buf)
+
+        return createPacket(cmd, msg)
+    }
+
+    function createNumberPacket(cmd: Commands, num1: number, num2: number, num3: number): Buffer {
+
+        let msg: Buffer = control.createBuffer(12)
+        msg.setNumber(NumberFormat.Int32LE, 0, num1)
+        msg.setNumber(NumberFormat.Int32LE, 4, num2)
+        msg.setNumber(NumberFormat.Int32LE, 8, num3)
+
+        return createPacket(cmd, msg)
+    }
+
+    function createPacket(cmd: Commands, msg: Buffer): Buffer {
+        let packet: Buffer = control.createBuffer(16)
+        if (msg.length != 12) {
+            console.log("wrong msg size")
+
+        }
+        else {
+
+            let checksum: number = 0
+            packet.setUint8(0, 0xbb)
+            packet.setUint8(1, 0x00)
+            packet.setUint8(2, cmd)
+            packet.write(3, msg)
+
+            for (let index = 0; index < 15; index++) {
+                checksum ^= packet[index]
+            }
+
+
+            packet.setUint8(15, checksum)
+            console.log("Packet: " + packet.toHex())
+
+        }
+        return packet
+    }
+
+    function receivePacket(timeout = 100): Buffer {
+        let buf: Buffer = radio.readRawPacket()
+        let checksum: number = 0
+        let time: number = 0
+
+        while (buf.length == 0) {
+
+            if (timeout != 0) {
+                if (time < timeout) {
+                    time = time + 10
+                }
+                else {
+                    console.log("Timeout receiving Packet")
+                    return null
+                }
+            }
+            basic.pause(10)
+            buf = radio.readRawPacket()
+        }
+        if (buf.length == 16) {
+            if (buf.getUint8(0) == 0xbb) {
+                console.log(buf.toHex())
+                for (let index = 0; index < 16; index++) {
+                    checksum ^= buf[index]
+                }
+
+                if (checksum == 0) {
+                    return buf.slice(3, 12)
+                }
+                else {
+                    console.log("Error Checksum : " + checksum.toString())
+                    return null
+                }
+            }
+            else {
+                console.log("Error Packetformat")
+                return null
+            }
+        }
+        else {
+            console.log("Error length:" + buf.length.toString())
             return null
         }
 
