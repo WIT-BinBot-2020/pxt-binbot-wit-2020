@@ -1,6 +1,6 @@
 {
     "name": "pxt-binbot-wit",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "MakeCode extensions for WITs Binbot Project - BETA",
     "dependencies": {
         "core": "*",
