@@ -27,8 +27,6 @@ enum DistanceSensors {
 //% weight=100 color=#0fbc11 icon=""
 namespace Binbot {
 
-
-
     /**
     * Move Binbot
     * @param x speed in x direction, eg: 100
