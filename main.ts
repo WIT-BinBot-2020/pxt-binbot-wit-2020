@@ -9,15 +9,24 @@ enum Commands {
 }
 
 enum DistanceSensors {
+    //% block="0"
     FRONT = 0,
+    //% block="1"
     FRONT_LEFT = 1,
-    FRONT_RIGHT = 8,
+    //% block="2"
     LEFT_FRONT = 2,
+    //% block="3"
     LEFT_BACK = 3,
+    //% block="4"
     BACK_LEFT = 4,
+    //% block="5"
     BACK_RIGHT = 5,
+    //% block="6"
     RIGHT_BACK = 6,
-    RIGHT_FRONT = 7
+    //% block="7"
+    RIGHT_FRONT = 7,
+    //% block="8"
+    FRONT_RIGHT = 8
 };
 
 
