@@ -2,6 +2,7 @@
     "name": "pxt-binbot-wit",
     "version": "0.0.8",
     "description": "MakeCode extensions for WITs Binbot Project",
+    "license": "MIT",
     "dependencies": {
         "core": "*",
         "radio": "*"
@@ -13,7 +14,5 @@
     "testFiles": [
         "test.ts"
     ],
-    "public": true,
-    "preferredEditor": "tsprj",
-    "installedVersion": "workspace:82ca2294-916f-4027-b03c-9f8e94ffce82"
+    "public": true
 }
