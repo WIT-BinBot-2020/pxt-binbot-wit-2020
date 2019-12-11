@@ -13,6 +13,7 @@ basic.forever(function () {
     if (start == 1) {
         Binbot.moveBinbot(input.acceleration(Dimension.X), input.acceleration(Dimension.Y), 0)
         front = Binbot.requestSensor(0)
+
         console.logValue("Front Sensor", front)
         basic.pause(100)
     }
