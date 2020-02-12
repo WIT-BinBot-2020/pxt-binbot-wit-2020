@@ -1,7 +1,8 @@
-# pxt-binbot-wit
+# pxt-binbot-wit-2020
 
 A MakeCode extensions for WITs Binbot Project
 
+Originally developed by [robertsausg](https://github.com/robertsausg/pxt-binbot-wit).
 
 ## Usage
 
@@ -27,4 +28,3 @@ MIT
 
 * for PXT/microbit
 (The metadata above is needed for package search.)
-
