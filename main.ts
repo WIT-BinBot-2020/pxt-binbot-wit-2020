@@ -99,30 +99,13 @@ namespace Binbot {
     }
 
     /**
-    * Request Sound
-    * @param sound sound to request i.e sound 1
+    * Play Sound
+    * @param sound sound to play i.e sound 1
     */
     //% block
-    export function requestSound(sound:Sounds): number {
+    export function playSound(sound:Sounds): number {
 
-      let res: Buffer
       sendPacket(createNumberPacket(Commands.CMD_REQUESTSOUND, sound, 0, 0))
-      res = receivePacket()
-
-      if (res != null) {
-          if (res.getNumber(NumberFormat.Int32LE, 0) == sensor) {
-              return res.getNumber(NumberFormat.Int32LE, 4)
-          }
-          else {
-              console.log("Error wrong sound data")
-              return null
-          }
-
-      }
-      else {
-          console.log("Error requesting sound")
-          return null
-      }
 
     }
 
@@ -132,7 +115,7 @@ namespace Binbot {
     */
     //% block
     export function sendName(name: string): void {
-      
+
       sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
 
     }
