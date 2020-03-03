@@ -132,8 +132,7 @@ namespace Binbot {
     */
     //% block
     export function sendName(name: string): void {
-
-      let res: Buffer
+      
       sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
 
     }
