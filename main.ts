@@ -31,23 +31,25 @@ enum DistanceSensors {
 }
 
 enum Sounds {
-    //% block="0"
-    SOUND_1 = 0,
-    //% block="1"
-    SOUND_2 = 1,
-    //% block="2"
-    SOUND_3 = 2,
-    //% block="3"
-    SOUND_4 = 3,
-    //% block="4"
-    SOUND_5 = 4,
-    //% block="5"
-    SOUND_6 = 5,
-    //% block="6"
-    SOUND_7 = 6,
-    //% block="7"
-    SOUND_8 = 7
-};
+    //% block="Sound 0"
+    SOUND_ZERO = 0,
+    //% block="Sound 1"
+    SOUND_ONE = 1,
+    //% block="Sound 2"
+    SOUND_TWO = 2,
+    //% block="Sound 3"
+    SOUND_THREE = 3,
+    //% block="Sound 4"
+    SOUND_FOUR = 4,
+    //% block="Sound 5"
+    SOUND_FIVE = 5,
+    //% block="Sound 6"
+    SOUND_SIX = 6,
+    //% block="Sound 7"
+    SOUND_SEVEN = 7,
+    //% block="Sound 8"
+    SOUND_EIGHT = 8
+}
 
 
 /**
@@ -133,7 +135,7 @@ namespace Binbot {
 
       let res: Buffer
       sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
-      
+
     }
 
     export function sendNumbers(x: number, y: number, z: number): void {
