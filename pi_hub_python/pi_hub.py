@@ -30,6 +30,13 @@ microbitGatewaySerial = serial.Serial(
     timeout = 1
 )
 
+# Serial connection to Robotino for R/W messages if required from Microbit Gateway instruction
+robotinoSerial = serial.Serial(
+    port = '/dev/ttyACM1',
+    baudrate = 115200,
+    timeout = 1
+)
+
 # # # # # # # # # # # #
 # Main block of code
 # # # # # # # # # # # #
@@ -49,21 +56,29 @@ while True:
     # Switch case -> perform y functionality if x
     if cmd == "CMD_TEST":
         print("Writing data to Robotino..")
+        robotinoSerial.write(fromMicrobitGateway)
 
     elif cmd == "CMD_SENDSTRING":
         print("Sending a string to Robotino..")
+        robotinoSerial.write(fromMicrobitGateway)
 
     elif cmd == "CMD_SENDNUMBERS":
         print("Sending numbers to Robotino..")
+        robotinoSerial.write(fromMicrobitGateway)
 
     elif cmd == "CMD_CTRLOMNIDRIVE":
         print("Requesting to control Robotino movement..")
+        robotinoSerial.write(fromMicrobitGateway)
 
     elif cmd == "CMD_REQUESTDISTANCESENSOR":
         print("Request distance sensor data from the Robotino..")
+        robotinoSerial.write(fromMicrobitGateway)
+        fromRobotinoSerial = robotinoSerial.readline()
+        microbitGatewaySerial.write(fromRobotinoSerial)
 
     elif cmd == "CMD_SENDDISTANCESENSORVALUE":
         print("Sending a distance sensor value to the Robotino..")
+        robotinoSerial.write(fromMicrobitGateway)
 
     else:
         print("Command not defined in module, invalid.")
