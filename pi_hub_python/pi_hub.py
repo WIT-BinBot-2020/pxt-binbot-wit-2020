@@ -18,7 +18,7 @@ COMMANDS = [
     "CMD_TEST",
     "CMD_SENDSTRING",
     "CMD_SENDNUMBERS",
-    "CMD_CTRLOMNIDRIVE"
+    "CMD_CTRLOMNIDRIVE",
     "CMD_REQUESTDISTANCESENSOR",
     "CMD_SENDDISTANCESENSORVALUE"
 ]
@@ -42,7 +42,8 @@ while True:
         print("Invalid payload length, message __not__ from the Microbit Gateway detected.")
         continue
 
-    cmd = COMMANDS[fromMicrobitGateway[2]]
+    _cmd = fromMicrobitGateway[2]
+    cmd = COMMANDS[_cmd]
     rcv_msg = packet_encoding.ReceivedPacket(fromMicrobitGateway[3:12], fromMicrobitGateway[3], fromMicrobitGateway[7], fromMicrobitGateway[11])
 
     # Switch case -> perform y functionality if x
@@ -67,4 +68,4 @@ while True:
     else:
         print("Command not defined in module, invalid.")
 
-    time.sleep(1)
+    # time.sleep(1)
