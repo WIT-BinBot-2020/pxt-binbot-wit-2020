@@ -6,6 +6,7 @@ enum Commands {
     CMD_REQUESTDISTANCESENSOR = 4,
     CMD_SENDDISTANCESENSORVALUE = 5,
     CMD_REQUESTSOUND = 6,
+    CMD_SENDNAME = 7
 }
 
 enum DistanceSensors {
@@ -97,7 +98,7 @@ namespace Binbot {
 
     /**
     * Request Sound
-    * @param sound
+    * @param sound sound to request i.e sound 1
     */
     //% block
     export function requestSound(sound:Sounds): number {
@@ -121,6 +122,18 @@ namespace Binbot {
           return null
       }
 
+    }
+
+    /**
+    * Send name
+    * @param name name to set for the bot i.e Alexa
+    */
+    //% block
+    export function sendName(name: string): void {
+
+      let res: Buffer
+      sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
+      
     }
 
     export function sendNumbers(x: number, y: number, z: number): void {
