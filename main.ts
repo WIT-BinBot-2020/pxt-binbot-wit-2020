@@ -6,7 +6,8 @@ enum Commands {
     CMD_REQUESTDISTANCESENSOR = 4,
     CMD_SENDDISTANCESENSORVALUE = 5,
     CMD_REQUESTSOUND = 6,
-    CMD_SENDNAME = 7
+    CMD_SENDNAME = 7,
+    CMD_SENDMICTHRESHHOLD = 8
 }
 
 enum DistanceSensors {
@@ -117,6 +118,17 @@ namespace Binbot {
     export function sendName(name: string): void {
 
       sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
+
+    }
+
+    /**
+    * Send name
+    * @param name set volume threshold for bot
+    */
+    //% block
+    export function sendMicThreshold(threshold: number): void {
+
+      sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHHOLD, threshold, 0, 0))
 
     }
 
