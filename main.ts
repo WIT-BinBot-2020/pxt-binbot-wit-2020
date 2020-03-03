@@ -103,7 +103,7 @@ namespace Binbot {
     * @param sound sound to play i.e sound 1
     */
     //% block
-    export function playSound(sound:Sounds): number {
+    export function playSound(sound:Sounds): void {
 
       sendPacket(createNumberPacket(Commands.CMD_REQUESTSOUND, sound, 0, 0))
 
