@@ -65,9 +65,9 @@ def CreateNumberPacket(cmd, num1, num2, num3):
     msg = bytearray(MESSAGE_LENGTH)
 
     # Put number bytes at specified indexes
-    msg[0] = num1.to_bytes(1, 'little')
-    msg[4] = num2.to_bytes(1, 'little')
-    msg[8] = num3.to_bytes(1, 'little')
+    msg[0] = num1
+    msg[4] = num2
+    msg[8] = num3
 
     # Creating the final packet to be sent
     packet = bytearray(PAYLOAD_LENGTH)
