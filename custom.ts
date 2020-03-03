@@ -5,7 +5,8 @@ enum Commands {
     CMD_CTRLOMNIDRIVE = 3,
     CMD_REQUESTDISTANCESENSOR = 4,
     CMD_SENDDISTANCESENSORVALUE = 5,
-
+    CMD_REQUESTSOUND = 6,
+    CMD_SENDNAME = 7
 }
 
 enum DistanceSensors {
@@ -27,6 +28,25 @@ enum DistanceSensors {
     RIGHT_FRONT = 7,
     //% block="8"
     FRONT_RIGHT = 8
+}
+
+enum Sounds {
+    //% block="0"
+    SOUND_1 = 0,
+    //% block="1"
+    SOUND_2 = 1,
+    //% block="2"
+    SOUND_3 = 2,
+    //% block="3"
+    SOUND_4 = 3,
+    //% block="4"
+    SOUND_5 = 4,
+    //% block="5"
+    SOUND_6 = 5,
+    //% block="6"
+    SOUND_7 = 6,
+    //% block="7"
+    SOUND_8 = 7
 };
 
 
@@ -74,6 +94,46 @@ namespace Binbot {
             console.log("Error requesting sensor data")
             return null
         }
+    }
+
+    /**
+    * Request Sound
+    * @param sound sound to request i.e sound 1
+    */
+    //% block
+    export function requestSound(sound:Sounds): number {
+
+      let res: Buffer
+      sendPacket(createNumberPacket(Commands.CMD_REQUESTSOUND, sound, 0, 0))
+      res = receivePacket()
+
+      if (res != null) {
+          if (res.getNumber(NumberFormat.Int32LE, 0) == sensor) {
+              return res.getNumber(NumberFormat.Int32LE, 4)
+          }
+          else {
+              console.log("Error wrong sound data")
+              return null
+          }
+
+      }
+      else {
+          console.log("Error requesting sound")
+          return null
+      }
+
+    }
+
+    /**
+    * Send name
+    * @param name name to set for the bot i.e Alexa
+    */
+    //% block
+    export function sendName(name: string): void {
+
+      let res: Buffer
+      sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
+      
     }
 
     export function sendNumbers(x: number, y: number, z: number): void {
