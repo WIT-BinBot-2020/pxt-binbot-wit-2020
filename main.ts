@@ -5,7 +5,9 @@ enum Commands {
     CMD_CTRLOMNIDRIVE = 3,
     CMD_REQUESTDISTANCESENSOR = 4,
     CMD_SENDDISTANCESENSORVALUE = 5,
-
+    CMD_REQUESTSOUND = 6,
+    CMD_SENDNAME = 7,
+    CMD_SENDMICTHRESHHOLD = 8
 }
 
 enum DistanceSensors {
@@ -27,7 +29,28 @@ enum DistanceSensors {
     RIGHT_FRONT = 7,
     //% block="8"
     FRONT_RIGHT = 8
-};
+}
+
+enum Sounds {
+    //% block="Sound 0"
+    SOUND_ZERO = 0,
+    //% block="Sound 1"
+    SOUND_ONE = 1,
+    //% block="Sound 2"
+    SOUND_TWO = 2,
+    //% block="Sound 3"
+    SOUND_THREE = 3,
+    //% block="Sound 4"
+    SOUND_FOUR = 4,
+    //% block="Sound 5"
+    SOUND_FIVE = 5,
+    //% block="Sound 6"
+    SOUND_SIX = 6,
+    //% block="Sound 7"
+    SOUND_SEVEN = 7,
+    //% block="Sound 8"
+    SOUND_EIGHT = 8
+}
 
 
 /**
@@ -74,6 +97,39 @@ namespace Binbot {
             console.log("Error requesting sensor data")
             return null
         }
+    }
+
+    /**
+    * Play Sound
+    * @param sound sound to play i.e sound 1
+    */
+    //% block
+    export function playSound(sound:Sounds): void {
+
+      sendPacket(createNumberPacket(Commands.CMD_REQUESTSOUND, sound, 0, 0))
+
+    }
+
+    /**
+    * Send name
+    * @param name name to set for the bot i.e Alexa
+    */
+    //% block
+    export function sendName(name: string): void {
+
+      sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
+
+    }
+
+    /**
+    * Send name
+    * @param name set volume threshold for bot
+    */
+    //% block
+    export function sendMicThreshold(threshold: number): void {
+
+      sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHHOLD, threshold, 0, 0))
+
     }
 
     export function sendNumbers(x: number, y: number, z: number): void {
