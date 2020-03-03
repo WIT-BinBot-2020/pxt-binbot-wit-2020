@@ -1,5 +1,5 @@
 {
-    "name": "pxt-binbot-wit",
+    "name": "pxt-binbot-wit-2020",
     "version": "0.0.10",
     "description": "MakeCode extensions for WITs Binbot Project",
     "license": "MIT",
@@ -16,5 +16,5 @@
     ],
     "public": true,
     "preferredEditor": "tsprj",
-    "installedVersion": "WIT-BinBot-2020/pxt-binbot-wit-2020"
+    "installedVersion": "github:WIT-BinBot-2020/pxt-binbot-wit-2020"
   }
