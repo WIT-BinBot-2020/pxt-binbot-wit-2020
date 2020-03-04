@@ -142,9 +142,11 @@ namespace Binbot {
       let min: number = 0;
       let max: number = 100;
       if (threshold > max) {
-        threshold = 100;
+        threshold = max;
       }
-
+      else if (threshold < min){
+        threshold = min
+      }
 
       sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHHOLD, threshold, 0, 0))
 
