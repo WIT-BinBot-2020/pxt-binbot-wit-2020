@@ -140,7 +140,7 @@ namespace Binbot {
     export function sendMicThreshold(threshold: number): void {
 
       let min: number = 0;
-      let max: number = 100;
+      let max: number = 255;
       if (threshold > max) {
         threshold = max;
       }
