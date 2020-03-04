@@ -9,6 +9,7 @@ enum Commands {
     CMD_SENDNAME = 7,
     CMD_SENDMICTHRESHHOLD = 8,
     CMD_BINMOUTH = 9,
+    CMD_REQUESTMICANGLE = 10
 }
 
 enum DistanceSensors {
@@ -161,6 +162,34 @@ namespace Binbot {
 
       sendPacket(createNumberPacket(Commands.CMD_BINMOUTH, mouthState, 0, 0))
 
+    }
+
+    /**
+    * Request Mic Angle
+    * @param sensor requests angle at which sound was detected
+    */
+    //% block
+    export function requestMicAngle(): number {
+
+        let res: Buffer;
+        let x: number = 0;
+        let A: number = 0;
+        let B: number = 255;
+        let C: number = 0;
+        let D: number = 360;
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
+        res = receivePacket()
+        if (res != null) {
+            x = res.getNumber(NumberFormat.Int32LE, 4)
+            //A - B = 0 - 360
+            //C - D = 0- 255
+            y = (x - A)/(B - A) * (D - C) + C
+            return y
+        }
+        else {
+            console.log("Error requesting sensor data")
+            return null
+        }
     }
 
     export function sendNumbers(x: number, y: number, z: number): void {
