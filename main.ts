@@ -140,11 +140,13 @@ namespace Binbot {
     export function sendMicThreshold(threshold: number): void {
 
       let min: number = 0;
-      let max: number = 100;
+      let max: number = 255;
       if (threshold > max) {
-        threshold = 100;
+        threshold = max;
       }
-
+      else if (threshold < min){
+        threshold = min
+      }
 
       sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHHOLD, threshold, 0, 0))
 
