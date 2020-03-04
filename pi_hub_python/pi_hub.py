@@ -7,6 +7,7 @@
 
 import serial
 import packet_encoding
+from ears import ears
 import time
 
 # # # # # # # # # # # #
@@ -20,7 +21,12 @@ COMMANDS = [
     "CMD_SENDNUMBERS",
     "CMD_CTRLOMNIDRIVE",
     "CMD_REQUESTDISTANCESENSOR",
-    "CMD_SENDDISTANCESENSORVALUE"
+    "CMD_SENDDISTANCESENSORVALUE",
+    "CMD_REQUESTSOUND",
+    "CMD_SENDNAME",
+    "CMD_SENDMICTHRESHHOLD",
+    "CMD_BINMOUTH",
+    "CMD_REQUESTMICANGLE"
 ]
 
 # Serial connection to Microbit Gateway for R/W messages
@@ -64,6 +70,11 @@ while True:
 
     elif cmd == "CMD_SENDDISTANCESENSORVALUE":
         print("Sending a distance sensor value to the Robotino..")
+
+    elif cmd == "CMD_REQUESTMICANGLE":
+        print("Request mic angle data from the Mic Array..")
+        microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, ears.scaled_voice_detection_angle, 0, 0))
+        
 
     else:
         print("Command not defined in module, invalid.")
