@@ -7,7 +7,8 @@ enum Commands {
     CMD_SENDDISTANCESENSORVALUE = 5,
     CMD_REQUESTSOUND = 6,
     CMD_SENDNAME = 7,
-    CMD_SENDMICTHRESHHOLD = 8
+    CMD_SENDMICTHRESHHOLD = 8,
+    CMD_BINMOUTH = 9,
 }
 
 enum DistanceSensors {
@@ -31,6 +32,17 @@ enum DistanceSensors {
     FRONT_RIGHT = 8
 }
 
+enum MouthState{
+    //% block="Open"
+    OPEN = 0,
+    //% block="Closed"
+    CLOSED = 1,
+    //% block="Talk"
+    TALK = 2,
+    //% block="Munch"
+    MUNCH = 3
+}
+
 enum Sounds {
     //% block="Sound 0"
     SOUND_ZERO = 0,
@@ -51,7 +63,6 @@ enum Sounds {
     //% block="Sound 8"
     SOUND_EIGHT = 8
 }
-
 
 /**
  * Custom blocks
@@ -128,7 +139,25 @@ namespace Binbot {
     //% block
     export function sendMicThreshold(threshold: number): void {
 
+      let min: number = 0;
+      let max: number = 100;
+      if (threshold > max) {
+        threshold = 100;
+      }
+
+
       sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHHOLD, threshold, 0, 0))
+
+    }
+
+    /**
+    * Toggle bin mouth state
+    * @param mouthState
+    */
+    //% block
+    export function sendMouthX(mouthState: MouthState): void {
+
+      sendPacket(createNumberPacket(Commands.CMD_BINMOUTH, mouthState, 0, 0))
 
     }
 
