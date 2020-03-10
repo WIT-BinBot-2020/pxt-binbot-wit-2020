@@ -8,6 +8,5 @@ ser = serial.Serial('/dev/serial/by-id/usb-OpenMV_Virtual_Comm_Port_in_FS_Mode_0
 while True:
    eyes = ser.readline()
    if len(eyes) == 0:
-      print("Time out! Exit. \n")
-      sys.exit()
+      print("Sleeping.. No object detected. \n")
    print eyes
