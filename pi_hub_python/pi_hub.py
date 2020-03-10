@@ -7,7 +7,8 @@
 
 import serial
 import packet_encoding
-from ears import ears
+# from ears import ears
+from mouth import servo
 import time
 
 # # # # # # # # # # # #
@@ -82,10 +83,11 @@ while True:
         
     elif cmd == "CMD_BINMOUTH":
         print("Sending action to BinBot's ServoMouth..")
+        servo.mouth(rcv_msg.num1)
         
     elif cmd == "CMD_REQUESTMICANGLE":
         print("Request mic angle data from the Mic Array..")
-        microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, ears.scaled_voice_detection_angle, 0, 0))
+        # microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, ears.scaled_voice_detection_angle, 0, 0))
         
 
     else:
