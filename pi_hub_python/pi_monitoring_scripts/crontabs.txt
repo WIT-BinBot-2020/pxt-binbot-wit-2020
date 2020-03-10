@@ -20,5 +20,5 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
+*/10 * * * * /usr/bin/python3 /home/pi/IoT-Applications-2020/pxt-binbot-wit-2020/pi_hub_python/pi_monitoring_scripts/systemUsage.py > /home/pi/IoT-Applications-2020/pxt-binbot-wit-2020/pi_hub_python/pi_monitoring_scripts/systemUsage.log 1>&2
 
-*/10 * * * * /usr/bin/python3 /home/ubuntu/pxt-binbot-wit-2020/pi_hub_python/pi_monitoring_scripts/systemUsage.py > /home/ubuntu/pxt-binbot-wit-2020/pi_hub_python/pi_monitoring_scripts/systemUsage.log 1>&2
