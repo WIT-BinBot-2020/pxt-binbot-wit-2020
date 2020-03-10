@@ -71,6 +71,18 @@ while True:
     elif cmd == "CMD_SENDDISTANCESENSORVALUE":
         print("Sending a distance sensor value to the Robotino..")
 
+    elif cmd == "CMD_REQUESTSOUND":
+        print("Playing sound..")
+        
+    elif cmd == "CMD_SENDNAME":
+        print("Setting name of Mic Array voice..")
+        
+    elif cmd == "CMD_SENDMICTHRESHHOLD":
+        print("Setting mic detection threshold value to the Mic Array..")
+        
+    elif cmd == "CMD_BINMOUTH":
+        print("Sending action to BinBot's ServoMouth..")
+        
     elif cmd == "CMD_REQUESTMICANGLE":
         print("Request mic angle data from the Mic Array..")
         microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, ears.scaled_voice_detection_angle, 0, 0))
