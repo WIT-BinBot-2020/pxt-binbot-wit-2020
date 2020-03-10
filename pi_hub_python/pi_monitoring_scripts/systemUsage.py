@@ -16,4 +16,4 @@ data = {
     "disk": disk
     }
 
-publish("systemUsage", data)
+publish("piSystemUsage", data)
