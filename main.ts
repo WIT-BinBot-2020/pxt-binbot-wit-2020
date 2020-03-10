@@ -177,13 +177,14 @@ namespace Binbot {
         let B: number = 255;
         let C: number = 0;
         let D: number = 360;
+
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             x = res.getNumber(NumberFormat.Int32LE, 4)
             //A - B = 0 - 360
             //C - D = 0- 255
-            y = (x - A)/(B - A) * (D - C) + C
+            let y = (x - A)/(B - A) * (D - C) + C
             return y
         }
         else {
