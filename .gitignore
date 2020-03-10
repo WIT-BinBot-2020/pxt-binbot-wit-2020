@@ -1,3 +1,4 @@
 # Initial
 .venv
 venv/
+.idea/
