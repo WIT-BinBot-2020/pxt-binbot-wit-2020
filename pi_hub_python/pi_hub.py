@@ -7,6 +7,9 @@
 
 import serial
 import packet_encoding
+# from ears import ears
+from mouth import servo
+from sounds import sounds
 import time
 
 # # # # # # # # # # # #
@@ -20,7 +23,12 @@ COMMANDS = [
     "CMD_SENDNUMBERS",
     "CMD_CTRLOMNIDRIVE",
     "CMD_REQUESTDISTANCESENSOR",
-    "CMD_SENDDISTANCESENSORVALUE"
+    "CMD_SENDDISTANCESENSORVALUE",
+    "CMD_REQUESTSOUND",
+    "CMD_SENDNAME",
+    "CMD_SENDMICTHRESHHOLD",
+    "CMD_BINMOUTH",
+    "CMD_REQUESTMICANGLE"
 ]
 
 # Serial connection to Microbit Gateway for R/W messages
@@ -79,6 +87,24 @@ while True:
     elif cmd == "CMD_SENDDISTANCESENSORVALUE":
         print("Sending a distance sensor value to the Robotino..")
         robotinoSerial.write(fromMicrobitGateway)
+
+    elif cmd == "CMD_REQUESTSOUND":
+        print("Playing sound..")
+        sounds.play_sound(rcv_msg.num1)
+        
+    elif cmd == "CMD_SENDNAME":
+        print("Setting name of Mic Array voice..")
+        
+    elif cmd == "CMD_SENDMICTHRESHHOLD":
+        print("Setting mic detection threshold value to the Mic Array..")
+        
+    elif cmd == "CMD_BINMOUTH":
+        print("Sending action to BinBot's ServoMouth..")
+        servo.mouth(rcv_msg.num1)
+        
+    elif cmd == "CMD_REQUESTMICANGLE":
+        print("Request mic angle data from the Mic Array..")
+        # microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, ears.scaled_voice_detection_angle, 0, 0))
 
     else:
         print("Command not defined in module, invalid.")

@@ -20,10 +20,14 @@ MESSAGE_LENGTH = 12
 # Wrapping the message to be received from the Microbit Gateway
 class ReceivedPacket:
     def __init__(self, *args, **kwargs):
-        self.str1 = args[0]
+        self.str1 = str(args[0])
         self.num1 = args[1]
         self.num2 = args[2]
         self.num3 = args[3]
+        
+        # Cleaning the string input
+        # e.g. b'\Andy\00' -> Andy
+        self.str1 = self.str1[2 : len(self.str1) - 1].replace('\\x00', '')
 
 # # # # # # # # # # # #
 # Packet Creation Helpers

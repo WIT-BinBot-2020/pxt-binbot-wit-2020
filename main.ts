@@ -5,7 +5,11 @@ enum Commands {
     CMD_CTRLOMNIDRIVE = 3,
     CMD_REQUESTDISTANCESENSOR = 4,
     CMD_SENDDISTANCESENSORVALUE = 5,
-
+    CMD_REQUESTSOUND = 6,
+    CMD_SENDNAME = 7,
+    CMD_SENDMICTHRESHHOLD = 8,
+    CMD_BINMOUTH = 9,
+    CMD_REQUESTMICANGLE = 10
 }
 
 enum DistanceSensors {
@@ -27,8 +31,39 @@ enum DistanceSensors {
     RIGHT_FRONT = 7,
     //% block="8"
     FRONT_RIGHT = 8
-};
+}
 
+enum MouthState{
+    //% block="Open"
+    OPEN = 0,
+    //% block="Closed"
+    CLOSED = 1,
+    //% block="Talk"
+    TALK = 2,
+    //% block="Munch"
+    MUNCH = 3
+}
+
+enum Sounds {
+    //% block="Mouth Open 0"
+    SOUND_ZERO = 0,
+    //% block="Mouth Close 1"
+    SOUND_ONE = 1,
+    //% block="Robot Stop 2"
+    SOUND_TWO = 2,
+    //% block="Shut down 3"
+    SOUND_THREE = 3,
+    //% block="Start Up 4"
+    SOUND_FOUR = 4,
+    //% block="Sound 5"
+    //SOUND_FIVE = 5,
+    //% block="Sound 6"
+    //SOUND_SIX = 6,
+    //% block="Sound 7"
+    //SOUND_SEVEN = 7,
+    //% block="Sound 8"
+    //SOUND_EIGHT = 8
+}
 
 /**
  * Custom blocks
@@ -69,6 +104,88 @@ namespace Binbot {
                 return null
             }
 
+        }
+        else {
+            console.log("Error requesting sensor data")
+            return null
+        }
+    }
+
+    /**
+    * Play Sound
+    * @param sound sound to play i.e sound 1
+    */
+    //% block
+    export function playSound(sound:Sounds): void {
+
+      sendPacket(createNumberPacket(Commands.CMD_REQUESTSOUND, sound, 0, 0))
+
+    }
+
+    /**
+    * Send name
+    * @param name name to set for the bot i.e Alexa
+    */
+    //% block
+    export function sendName(name: string): void {
+
+      sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
+
+    }
+
+    /**
+    * Send name
+    * @param name set volume threshold for bot
+    */
+    //% block
+    export function sendMicThreshold(threshold: number): void {
+
+      let min: number = 0;
+      let max: number = 255;
+      if (threshold > max) {
+        threshold = max;
+      }
+      else if (threshold < min){
+        threshold = min
+      }
+
+      sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHHOLD, threshold, 0, 0))
+
+    }
+
+    /**
+    * Toggle bin mouth state
+    * @param mouthState
+    */
+    //% block
+    export function sendMouthX(mouthState: MouthState): void {
+
+      sendPacket(createNumberPacket(Commands.CMD_BINMOUTH, mouthState, 0, 0))
+
+    }
+
+    /**
+    * Request Mic Angle
+    * @param sensor requests angle at which sound was detected
+    */
+    //% block
+    export function requestMicAngle(): number {
+
+        let res: Buffer;
+        let x: number = 0;
+        let A: number = 0;
+        let B: number = 255;
+        let C: number = 0;
+        let D: number = 360;
+
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
+        res = receivePacket()
+        if (res != null) {
+            x = res.getNumber(NumberFormat.Int32LE, 4)
+            //A - B = 0 - 360
+            //C - D = 0- 255
+            let y = (x - A)/(B - A) * (D - C) + C
+            return y
         }
         else {
             console.log("Error requesting sensor data")
