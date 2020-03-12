@@ -9,6 +9,7 @@ import serial
 import packet_encoding
 # from ears import ears
 from mouth import servo
+from sounds import sounds
 import time
 
 # # # # # # # # # # # #
@@ -74,6 +75,7 @@ while True:
 
     elif cmd == "CMD_REQUESTSOUND":
         print("Playing sound..")
+        sounds.play_sound(rcv_msg.num1)
         
     elif cmd == "CMD_SENDNAME":
         print("Setting name of Mic Array voice..")
@@ -88,7 +90,6 @@ while True:
     elif cmd == "CMD_REQUESTMICANGLE":
         print("Request mic angle data from the Mic Array..")
         # microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, ears.scaled_voice_detection_angle, 0, 0))
-        
 
     else:
         print("Command not defined in module, invalid.")
