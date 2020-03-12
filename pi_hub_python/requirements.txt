@@ -1,2 +1,4 @@
+setuptools
 paho-mqtt
-
+pyusb==1.0.2
+adafruit-circuitpython-servokit
