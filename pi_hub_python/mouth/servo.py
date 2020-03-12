@@ -3,11 +3,6 @@ from adafruit_servokit import ServoKit
 
 kit = ServoKit(channels=16)
 
-openMouth = 0
-close = 1
-talk = 2
-munch = 3
-
 def mouth(action):
     if(action == 0):
         print("openMouth")
@@ -40,11 +35,3 @@ def mouth(action):
             time.sleep(1.25)
     elif((action < 0) or (action > 4)):
         print("No action.")
-        
-def main():
-    #mouth(openMouth)
-    mouth(close)
-    #mouth(talk)
-    #mouth(munch)
-    
-main()
