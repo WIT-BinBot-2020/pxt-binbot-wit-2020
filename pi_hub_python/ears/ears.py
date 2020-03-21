@@ -1,21 +1,35 @@
 # ReSpeaker Microphone Array v2.0 Code for BinBot
+# Author: Jon Gillespie | References at Base
+# Waterford Institute of Technology
+# IOT Applications in the Robotics Lab
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# FOR USE WITHIN THE RPI HUB
-# 1. ANGLE OF VOICE DETECTION USE within a loop : "ears.scaled_voice_detection_angle"
+# NOTE: FOR USE WITHIN THE RPI HUB
+# Two seperate threads are created:
+#   1. Thread One: Angle of Voice Detection
+#           > Access this variable by reading the global : "ears.scaled_voice_detection_angle"
+#       A. VAD Threshold Set
+#           > Sets the above thread's voice detection threshold, higher for crowded spaces is best.
+#   2. Thread Two: Speech Recognition
+#       A. TODO
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-print("ears.py | Loading Ears.py Script")
-
-from tuning import Tuning
-import usb.core
-import usb.util
-import time
-import logging
+import speech_recognition as sr
 import threading
+import logging
+import time
+import usb.util
+import usb.core
+from tuning import Tuning
+print("EARS | Loading Ears.py Script")
+
+
+""" User's Keywords for Speech Recognition """
+# Format: ("word", threshold) ... threshold is between 0 and 1. Closer to 0 is more false positives.
+user_keywords = [("binbot", 1.0), ("rubbish", 1.0)]
 
 """ Global Variables used by the Mic Array """
 vad_threshold = 300
@@ -34,17 +48,17 @@ _is_stop_thread_flag = False
 dev = usb.core.find(idVendor=0x2886, idProduct=0x0018)
 # Loop until ReSpeaker is found - unlikely but for insurance.
 while not dev:
-    print("ears.py | Looking for Mic Array")
+    print("EARS | Setting Up         | Looking for Mic Array")
     dev = usb.core.find(idVendor=0x2886, idProduct=0x0018)
 if dev:
-    print("ears.py | Found Mic Array")
+    print("EARS | Setting Up         | Found Mic Array")
     Mic_tuning = Tuning(dev)
     # Mic_tuning.set_HPFONOFF(3) I think this has to run on the CLI as param
 
 
 def _run_voice_detection_loop_thread():
     """ Private: create a thread to poll the Mic Array and set the DOA Global Variable """
-    print("ears.py | THREAD: Voice Detection Loop Starting")
+    print("EARS | Voice Detection    | Voice Detection Loop Starting")
     # Mic_tuning.set_vad_threshold(vad_threshold)
     while True:
         global voice_detection_angle
@@ -53,7 +67,8 @@ def _run_voice_detection_loop_thread():
             is_voice_detected = Mic_tuning.is_voice()
             if is_voice_detected:
                 voice_detection_angle = Mic_tuning.direction
-                print("ears.py | THREAD: Voice Direction of Arrival: ", voice_detection_angle)
+                print("EARS | Voice Detection    | Direction of Arrival: ",
+                      voice_detection_angle)
                 global scaled_voice_detection_angle
                 scaled_voice_detection_angle = voice_detection_angle / 360 * 255
 
@@ -65,7 +80,8 @@ def _run_voice_detection_loop_thread():
 
 
 """ Set the target for the DOA Thread """
-doa_thread = threading.Thread(target=_run_voice_detection_loop_thread, daemon=True)
+doa_thread = threading.Thread(
+    target=_run_voice_detection_loop_thread, daemon=True)
 
 
 def set_vad_threshold(make_code_requested_vad_threshold):
@@ -86,9 +102,9 @@ def set_vad_threshold(make_code_requested_vad_threshold):
             # start_doa_thread()
 
         else:
-            print("ears.py | ERROR: make_code_requested_vad_threshold - parameter is not within range")
+            print("EARS | Voice Detection    | ERROR: make_code_requested_vad_threshold - parameter is not within range")
     else:
-        print("ears.py | ERROR: make_code_requested_vad_threshold - parameter is not an Int")
+        print("EARS | Voice Detection    | ERROR: make_code_requested_vad_threshold - parameter is not an Int")
 
 
 def start_doa_thread():
@@ -96,7 +112,7 @@ def start_doa_thread():
     # Ensure the stop flag is off before starting a new thread
     global _is_stop_thread_flag
     _is_stop_thread_flag = False
-    print("ears.py | Starting DOA Loop Thread")
+    print("EARS | Voice Detection    | Starting DOA Loop Thread")
     # Create a new thread without any parameters (args)
     # global doa_thread
     doa_thread.start()
@@ -104,7 +120,7 @@ def start_doa_thread():
 
 def _stop_doa_thread():
     # Private: stop the currently running thread and reset the flag
-    print("ears.py | Stopping DOA Loop Thread")
+    print("EARS | Voice Detection    | Stopping DOA Loop Thread")
     global _is_stop_thread_flag
     # Set the stop flag to true, so that once the thread re-joins the main process, it will know to die.
     _is_stop_thread_flag = True
@@ -121,7 +137,45 @@ def _stop_doa_thread():
     #     print("IS ALIVE STILL")
 
 
+def speech_recognition(user_keywords):
+
+    r = sr.Recognizer()
+    m = sr.Microphone()
+
+    try:
+        print("EARS | Speech Recognition | Starting Up...")
+        with m as source:
+            r.adjust_for_ambient_noise(source)
+        print("EARS | Speech Recognition | Set minimum energy threshold to {}".format(
+            r.energy_threshold))
+        while True:
+            print("EARS | Speech Recognition | Ready and Listening...")
+            with m as source:
+                audio = r.listen(source)
+            print(
+                "EARS | Speech Recognition | Voices detected >>> processing for keywords...")
+            try:
+                sphinx_value = r.recognize_sphinx(
+                    audio, keyword_entries=user_keywords)
+                print(
+                    "EARS | Speech Recognition | * * KEYWORD RECOGNISED * * Sphinx Found:  \" {}\"".format(sphinx_value))
+                # Google Speech Recognition
+                # google_value = r.recognize_google(audio, keyword_entries=user_keywords)
+                # print("EARS | Speech Recognition | * * KEYWORD RECOGNISED * * Google Found:  {}".format(sphinx_value))
+            except sr.UnknownValueError:
+                print("EARS | Speech Recognition | *EXCEPTION* Unknown Value Heard...")
+            except sr.RequestError as e:
+                print(
+                    "EARS | Speech Recognition | *EXCEPTION* Couldn't request results from Google Speech Recognition service; {0}".format(e))
+
+    except Exception:
+        pass
+
+
 start_doa_thread()
+
+while True:
+    speech_recognition(user_keywords)
 
 # REFERENCES
 # Threading: https://realpython.com/intro-to-python-threading/#starting-a-thread
