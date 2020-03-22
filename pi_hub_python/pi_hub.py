@@ -7,7 +7,7 @@
 
 import serial
 import packet_encoding
-# from ears import ears
+from ears import ears
 from mouth import servo
 from sounds import sounds
 import time
@@ -55,6 +55,7 @@ while True:
     rcv_msg = packet_encoding.ReceivedPacket(fromMicrobitGateway[3:12], fromMicrobitGateway[3], fromMicrobitGateway[7], fromMicrobitGateway[11])
 
     # Switch case -> perform y functionality if x
+    # - - - MOVEMENT - - -
     if cmd == "CMD_TEST":
         print("Writing data to Robotino..")
 
@@ -67,22 +68,28 @@ while True:
     elif cmd == "CMD_CTRLOMNIDRIVE":
         print("Requesting to control Robotino movement..")
 
+    # - - - EYES ? - - -
     elif cmd == "CMD_REQUESTDISTANCESENSOR":
         print("Request distance sensor data from the Robotino..")
 
     elif cmd == "CMD_SENDDISTANCESENSORVALUE":
         print("Sending a distance sensor value to the Robotino..")
 
+    # - - - SOUND - - -
     elif cmd == "CMD_REQUESTSOUND":
         print("Playing sound..")
         sounds.play_sound(rcv_msg.num1)
         
-    elif cmd == "CMD_SENDNAME":
-        print("Setting name of Mic Array voice..")
+    # - - - EARS - - -
+    elif cmd == "CMD_SENDKEYWORD":
+        print("Setting keyword for Mic Array voice recognition..")
         
     elif cmd == "CMD_SENDMICTHRESHHOLD":
-        print("Setting mic detection threshold value to the Mic Array..")
+        print("Setting mic voice detection threshold value to the Mic Array..")
+
+    elif cmd == "CMD_"
         
+    # - - - MOUTH - - -
     elif cmd == "CMD_BINMOUTH":
         print("Sending action to BinBot's ServoMouth..")
         servo.mouth(rcv_msg.num1)
