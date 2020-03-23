@@ -26,7 +26,7 @@ COMMANDS = [
     "CMD_SENDDISTANCESENSORVALUE",
     "CMD_REQUESTSOUND",
     "CMD_REQUESTDOAANGLE",
-    "CMD_SENDMICTHRESHHOLD",
+    "CMD_SENDMICTHRESHOLD",
     "CMD_GETMICTHRESHOLD",
     "CMD_SENDKEYWORD",
     "CMD_GETKEYWORDS",
@@ -36,15 +36,15 @@ COMMANDS = [
 
 # Serial connection to Microbit Gateway for R/W messages
 microbitGatewaySerial = serial.Serial(
-    port = '/dev/ttyACM0',
-    baudrate = 115200,
-    timeout = 1
+    port='/dev/ttyACM0',
+    baudrate=115200,
+    timeout=1
 )
 
 
-# # # # # # # # # # # #
+# # # # # # # # # # # # #
 # Start Up
-# # # # # # # # # # # #
+# # # # # # # # # # # # #
 
 # - - - EARS - - -
 # Starts the main Ears threads. (Can be used to start a stopped thread too)
@@ -53,14 +53,14 @@ ears.start_keyword_recognition_thread()
 # You can stop the threads with the below at any time.
 # ears.stop_direction_of_arrival_thread()
 # ears.stop_keyword_recognition_thread()
+is_keyword_event_sent_to_make_code = False
 
 
-
-# # # # # # # # # # # #
-# Main block of code
-# # # # # # # # # # # #
+# # # # # # # # # # # # # #
+# Main Message Controller
+# # # # # # # # # # # # # #
 while True:
-    
+
     # Continuously read in message from the Microbit Gateway
     fromMicrobitGateway = microbitGatewaySerial.readline()
 
@@ -70,7 +70,8 @@ while True:
 
     _cmd = fromMicrobitGateway[2]
     cmd = COMMANDS[_cmd]
-    rcv_msg = packet_encoding.ReceivedPacket(fromMicrobitGateway[3:12], fromMicrobitGateway[3], fromMicrobitGateway[7], fromMicrobitGateway[11])
+    rcv_msg = packet_encoding.ReceivedPacket(
+        fromMicrobitGateway[3:12], fromMicrobitGateway[3], fromMicrobitGateway[7], fromMicrobitGateway[11])
 
     # Switch case -> perform y functionality if x
     # - - - MOVEMENT - - -
@@ -97,31 +98,34 @@ while True:
     elif cmd == "CMD_REQUESTSOUND":
         print("Playing sound..")
         sounds.play_sound(rcv_msg.num1)
-        
+
     # - - - EARS - - -
     elif cmd == "CMD_REQUESTDOAANGLE":
         print("Request direction of arrival angle data from the Mic Array..")
-        doa_angle = ears.get_scaled_voice_detectoin_angle()
-        # microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, doa_angle, 0, 0))
+        doa_angle = ears.get_scaled_voice_detection_angle()
+        microbitGatewaySerial.write(
+            packet_encoding.CreateNumberPacket(_cmd, doa_angle, 0, 0))
 
-    elif cmd == "CMD_SENDMICTHRESHHOLD":
+    elif cmd == "CMD_SENDMICTHRESHOLD":
         print("Setting mic voice detection threshold value of the Mic Array..")
-        ears.set_vad_threshold(make_code_requested_vad_threshold=) # TODO Add incoming variable to parameter
+        # TODO Add incoming variable to parameter
+        ears.set_vad_threshold(make_code_requested_vad_threshold=rcv_msg.num1)
 
     elif cmd == "CMD_GETMICTHRESHOLD":
         print("Retrieving mic voice detection threshold value of the Mic Array..")
         voice_detection_threshold = ears.get_vad_threshold()
-        # microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, voice_detection_threshold, 0, 0))
+        microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, voice_detection_threshold, 0, 0))
 
     elif cmd == "CMD_SENDKEYWORD":
         print("Setting keyword for Mic Array voice recognition..")
-        ears.add_user_keyword(keyword=)  # TODO Add incoming variable to parameter
+        ears.add_user_keyword(keyword=rcv_msg.str1)
 
+    # NOTE: This may not be feasable given the list it will return is longer than a few characters...LIMIT>?
     elif cmd == "CMD_GETKEYWORDS":
         print("Retreive keywords for Mic Array voice recognition..")
         keywords_list = ears.get_user_keywords()
         # microbitGatewaySerial.write(packet_encoding.CreateStringPacket(_cmd, keywords_list, 0,0))
-        
+
     # - - - MOUTH - - -
     elif cmd == "CMD_BINMOUTH":
         print("Sending action to BinBot's ServoMouth..")
@@ -131,3 +135,17 @@ while True:
         print("Command not defined in module, invalid.")
 
     # time.sleep(1)
+
+
+    # # # # # # # # # # # # # #
+    # Event Checks Sub-Controller
+    # # # # # # # # # # # # # #
+
+    # - - - EARS - - -    # TODO Need to chat about the Make Code interpretation of an event trigger.
+    if ears.has_recognised_keyword and not is_keyword_event_sent_to_make_code:
+        microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, 1, 0, 0))
+        is_keyword_event_sent_to_make_code = True
+        ears.has_recognised_keyword = False
+    
+
+

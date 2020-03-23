@@ -32,6 +32,7 @@ print("EARS | Loading Ears.py Script")
 """ User's Keywords for Keyword Recognition """
 # Format: ("word", threshold) ... threshold is between 0 and 1. Closer to 0 is more false positives.
 user_keywords = [("binbot", 1.0), ("rubbish", 1.0)]
+has_recognised_keyword = False
 
 """ Global Variables used by the Mic Array """
 vad_threshold = 300
@@ -61,7 +62,7 @@ if dev:
 # VOICE DETECTION ANGLE
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-def get_scaled_voice_detectoin_angle():
+def get_scaled_voice_detection_angle():
     return scaled_voice_detection_angle_to_255
 
 
@@ -95,7 +96,7 @@ def get_vad_threshold():
 
 
 def set_vad_threshold(make_code_requested_vad_threshold):
-    # TODO THIS GETS THE VAD
+    # NOTE: The VAD is accesible via custom function within tuning.py
     # print("" + Mic_tuning.get_VAD())
     """ Public: re-set the VAD threshold """
     # Confirm parameter is an int
@@ -177,6 +178,8 @@ def _keyword_recognition():
                     # Google Keyword Recognition
                     # google_value = r.recognize_google(audio, keyword_entries=user_keywords)
                     # print("EARS | Keyword Recognition | * * KEYWORD RECOGNISED * * Google Found:  {}".format(sphinx_value))
+                    global has_recognised_keyword
+                    has_recognised_keyword = True
                 except sr.UnknownValueError:
                     print(
                         "EARS | Keyword Recognition | *EXCEPTION* Unknown Value Heard...")
@@ -187,7 +190,7 @@ def _keyword_recognition():
                     print("Keyword Recognition Thread told to stop.(1)")
                     break
         except Exception:
-            pass 
+            pass
         if _is_keyword_recognition_stop_thread_flag:
             print("Keyword Recognition Thread told to stop.(2)")
             break
@@ -199,9 +202,9 @@ _keyword_recognition_thread = threading.Thread(
 
 
 def start_keyword_recognition_thread():
+    print("EARS | Keyword Recognition | Starting Keyword Recognition Thread")
     global _is_keyword_recognition_stop_thread_flag
     _is_keyword_recognition_stop_thread_flag = False
-    print("EARS | Keyword Recognition | Starting Keyword Recognition Thread")
     # Create a new thread without any parameters (args)
     # global _keyword_recognition
     _keyword_recognition_thread.start()
@@ -209,11 +212,9 @@ def start_keyword_recognition_thread():
 
 def stop_keyword_recognition_thread():
     print("EARS | Keyword Recognition | Stopping Keyword Recognition Thread")
+    global has_recognised_keyword
+    has_recognised_keyword = False
     global _is_keyword_recognition_stop_thread_flag
     _is_keyword_recognition_stop_thread_flag = True
     global _keyword_recognition_thread
     _keyword_recognition_thread.join()
-
-
-# REFERENCES
-# Threading: https://realpython.com/intro-to-python-threading/#starting-a-thread

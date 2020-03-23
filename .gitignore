@@ -2,3 +2,4 @@
 .venv
 venv/
 .idea/
+pi_hub_python/ears/__pycache__/
