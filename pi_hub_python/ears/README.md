@@ -16,6 +16,17 @@ http://wiki.seeedstudio.com/ReSpeaker_Mic_Array_v2.0/#version
 
 In order to run on an RPi, the following commands should get you up to speed...
 
+TODO
+```
+pip3 install pyusb
+```
+TODO 
+```
+sudo apt-get install flac
+```
+
+
+
 PocketSphinx requirements:
 
 ```
