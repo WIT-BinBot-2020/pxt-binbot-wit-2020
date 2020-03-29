@@ -7,9 +7,10 @@ enum Commands {
     CMD_SENDDISTANCESENSORVALUE = 5,
     CMD_REQUESTSOUND = 6,
     CMD_SENDNAME = 7,
-    CMD_SENDMICTHRESHHOLD = 8,
+    CMD_SENDMICTHRESHOLD = 8,
     CMD_BINMOUTH = 9,
-    CMD_REQUESTMICANGLE = 10
+    CMD_REQUESTMICANGLE = 10,
+    CMD_REQUESTOBJCOORDS = 11
 }
 
 enum DistanceSensors {
@@ -149,7 +150,7 @@ namespace Binbot {
         threshold = min
       }
 
-      sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHHOLD, threshold, 0, 0))
+      sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHOLD, threshold, 0, 0))
 
     }
 
@@ -186,6 +187,28 @@ namespace Binbot {
             //C - D = 0- 255
             let y = (x - A)/(B - A) * (D - C) + C
             return y
+        }
+        else {
+            console.log("Error requesting sensor data")
+            return null
+        }
+    }
+
+    /**
+    * Request Object Coords
+    */
+    //% block
+    export function requestObjectCoords(): tuple {
+
+        let res: Buffer;
+        let x: number;
+        let y: number;
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
+        res = receivePacket()
+        if (res != null) {
+            x = res.getNumber(NumberFormat.Int32LE, 4)
+            y = res.getNumber(NumberFormat.Int32LE, 8)
+            let coords: [x, y];
         }
         else {
             console.log("Error requesting sensor data")
