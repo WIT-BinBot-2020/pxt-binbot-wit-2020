@@ -18,6 +18,24 @@ import time
 
 # Mapping of command numbers and their associated system functionality
 COMMANDS = [
+    "CMD_TEST", #= 0,
+    "CMD_SENDSTRING", #= 1,
+    "CMD_SENDNUMBERS", #= 2,
+    "CMD_CTRLOMNIDRIVE", #= 3,
+    "CMD_REQUESTDISTANCESENSOR", #= 4,
+    "CMD_SENDDISTANCESENSORVALUE", #= 5,
+    "CMD_REQUESTSOUND", #= 6,
+    "CMD_SENDNAME", #= 7,
+    "CMD_SENDMICTHRESHOLD", #= 8,
+    "CMD_BINMOUTH", #= 9,
+    "CMD_REQUESTMICANGLE", #= 10,
+    "CMD_REQUESTOBJCOORDS", #= 11,
+    "CMD_REQUESTNAMECALLED" #= 12
+]
+
+# Outdated command numbers mapping, to be discussed
+"""
+COMMANDS = [
     "CMD_TEST",
     "CMD_SENDSTRING",
     "CMD_SENDNUMBERS",
@@ -32,7 +50,7 @@ COMMANDS = [
     "CMD_GETKEYWORDS",
     "CMD_BINMOUTH",
 ]
-
+"""
 
 # Serial connection to Microbit Gateway for R/W messages
 microbitGatewaySerial = serial.Serial(
@@ -94,13 +112,17 @@ while True:
     elif cmd == "CMD_SENDDISTANCESENSORVALUE":
         print("Sending a distance sensor value to the Robotino..")
 
+    elif cmd == "CMD_REQUESTOBJCOORDS":
+        print("Request most recently detected object's coordinates..")
+
     # - - - SOUND - - -
     elif cmd == "CMD_REQUESTSOUND":
         print("Playing sound..")
         sounds.play_sound(rcv_msg.num1)
 
     # - - - EARS - - -
-    elif cmd == "CMD_REQUESTDOAANGLE":
+    # elif cmd == "CMD_REQUESTDOAANGLE":
+    elif cmd == "CMD_REQUESTMICANGLE":
         print("Request direction of arrival angle data from the Mic Array..")
         doa_angle = ears.get_scaled_voice_detection_angle()
         microbitGatewaySerial.write(
@@ -116,7 +138,8 @@ while True:
         voice_detection_threshold = ears.get_scaled_vad_threshold()
         microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, voice_detection_threshold, 0, 0))
 
-    elif cmd == "CMD_SENDKEYWORD":
+    # elif cmd == "CMD_SENDKEYWORD":
+    elif cmd == "CMD_SENDNAME":
         print("Setting keyword for Mic Array voice recognition..")
         ears.add_user_keyword(keyword=rcv_msg.str1)
 
@@ -125,6 +148,22 @@ while True:
         print("Retreive keywords for Mic Array voice recognition..")
         keywords_list = ears.get_user_keywords()
         # microbitGatewaySerial.write(packet_encoding.CreateStringPacket(_cmd, keywords_list, 0,0))
+
+    elif cmd == "CMD_REQUESTNAMECALLED":
+        print("Checking whether keyword was called or not..")
+
+        """
+        if ears.has_recognised_keyword and not is_keyword_event_sent_to_make_code:
+            microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, 1, 0, 0))
+            is_keyword_event_sent_to_make_code = True
+            ears.has_recognised_keyword = False
+        """
+
+        recognised_keyword = ears.has_recognised_keyword and 1 or 0
+        microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, recognised_keyword, 0, 0))
+        is_keyword_event_sent_to_make_code = True
+        ears.has_recognised_keyword = False
+        
 
     # - - - MOUTH - - -
     elif cmd == "CMD_BINMOUTH":
@@ -135,17 +174,6 @@ while True:
         print("Command not defined in module, invalid.")
 
     # time.sleep(1)
-
-
-    # # # # # # # # # # # # # #
-    # Event Checks Sub-Controller
-    # # # # # # # # # # # # # #
-
-    # - - - EARS - - -    # TODO Need to chat about the Make Code interpretation of an event trigger.
-    if ears.has_recognised_keyword and not is_keyword_event_sent_to_make_code:
-        microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, 1, 0, 0))
-        is_keyword_event_sent_to_make_code = True
-        ears.has_recognised_keyword = False
     
 
 
