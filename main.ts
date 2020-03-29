@@ -67,13 +67,13 @@ enum Sounds {
     //SOUND_EIGHT = 8
 }
 
-let voiceDetected: number = 0
-
 /**
  * Custom blocks
  */
 //% weight=100 color=#0fbc11 icon=""
 namespace Binbot {
+
+    let voiceDetected: number = 0
 
     /**
     * Move Binbot
