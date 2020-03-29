@@ -212,6 +212,7 @@ namespace Binbot {
             x = res.getNumber(NumberFormat.Int32LE, 4)
             y = res.getNumber(NumberFormat.Int32LE, 8)
             let coords: [x, y];
+            return coords
         }
         else {
             console.log("Error requesting sensor data")
@@ -242,7 +243,6 @@ namespace Binbot {
 
     /**
     * Request Voice Detected but we reset it to 0 in da code
-    * @param sensor requests whether or not the voice command was detected
     */
     //% block
     export function requestVoiceDetected2ElectricBoogaloo(): void {
