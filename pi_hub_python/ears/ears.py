@@ -25,7 +25,7 @@ import logging
 import time
 import usb.util
 import usb.core
-from tuning import Tuning
+from .tuning import Tuning
 print("EARS | Loading Ears.py Script")
 
 
@@ -41,6 +41,7 @@ vad_threshold = 300
 # Referenced by Controller (pi_hub.py) >> Ensure used within a polling loop or framework
 voice_detection_angle_to_360 = 0
 scaled_voice_detection_angle_to_255 = 0
+scaled_vad_threshold_to_255 = vad_threshold / 1000 * 255
 
 """ Private Global Variables """
 vad_range_max = 1000  # Limit Set by MicArray Tuning
@@ -95,6 +96,10 @@ def get_vad_threshold():
     return vad_threshold
 
 
+def get_scaled_vad_threshold():
+    return scaled_vad_threshold_to_255
+
+
 def set_vad_threshold(make_code_requested_vad_threshold):
     # NOTE: The VAD is accesible via custom function within tuning.py
     # print("" + Mic_tuning.get_VAD())
@@ -107,6 +112,8 @@ def set_vad_threshold(make_code_requested_vad_threshold):
             # Set scaled threshold
             global vad_threshold
             vad_threshold = int(make_code_requested_vad_threshold / 255 * 1000)
+            global scaled_vad_threshold_to_255
+            scaled_vad_threshold_to_255 = make_code_requested_vad_threshold
             print("EARS | Voice Detection     | VAD: ", vad_threshold)
         else:
             print("EARS | Voice Detection     | ERROR: make_code_requested_vad_threshold - parameter is not within range")
