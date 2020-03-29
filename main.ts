@@ -67,13 +67,13 @@ enum Sounds {
     //SOUND_EIGHT = 8
 }
 
-let voiceDetected: number = 0
-
 /**
  * Custom blocks
  */
 //% weight=100 color=#0fbc11 icon=""
 namespace Binbot {
+
+    let voiceDetected: number = 0
 
     /**
     * Move Binbot
@@ -211,7 +211,7 @@ namespace Binbot {
         if (res != null) {
             x = res.getNumber(NumberFormat.Int32LE, 4)
             y = res.getNumber(NumberFormat.Int32LE, 8)
-            let coords: [x, y];
+            let coords:tuple = [x, y];
             return coords
         }
         else {
