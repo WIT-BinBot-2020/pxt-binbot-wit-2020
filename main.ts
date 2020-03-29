@@ -45,24 +45,24 @@ enum MouthState{
 }
 
 enum Sounds {
-    //% block="Sound 0"
+    //% block="Mouth Open 0"
     SOUND_ZERO = 0,
-    //% block="Sound 1"
+    //% block="Mouth Close 1"
     SOUND_ONE = 1,
-    //% block="Sound 2"
+    //% block="Robot Stop 2"
     SOUND_TWO = 2,
-    //% block="Sound 3"
+    //% block="Shut down 3"
     SOUND_THREE = 3,
-    //% block="Sound 4"
+    //% block="Start Up 4"
     SOUND_FOUR = 4,
     //% block="Sound 5"
-    SOUND_FIVE = 5,
+    //SOUND_FIVE = 5,
     //% block="Sound 6"
-    SOUND_SIX = 6,
+    //SOUND_SIX = 6,
     //% block="Sound 7"
-    SOUND_SEVEN = 7,
+    //SOUND_SEVEN = 7,
     //% block="Sound 8"
-    SOUND_EIGHT = 8
+    //SOUND_EIGHT = 8
 }
 
 /**
@@ -177,13 +177,14 @@ namespace Binbot {
         let B: number = 255;
         let C: number = 0;
         let D: number = 360;
+
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             x = res.getNumber(NumberFormat.Int32LE, 4)
             //A - B = 0 - 360
             //C - D = 0- 255
-            y = (x - A)/(B - A) * (D - C) + C
+            let y = (x - A)/(B - A) * (D - C) + C
             return y
         }
         else {
