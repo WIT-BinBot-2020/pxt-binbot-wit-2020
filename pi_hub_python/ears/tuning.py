@@ -146,7 +146,7 @@ class Tuning:
     def is_voice(self):
         return self.read('VOICEACTIVITY')
 
-    # JONTY ETST
+    # JG Custom
     def get_VAD(self):
         return self.read('GAMMAVAD_SR')
 
