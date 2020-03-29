@@ -201,7 +201,7 @@ namespace Binbot {
     * Request Object Coords
     */
     //% block
-    export function requestObjectCoords(): tuple {
+    export function requestObjectCoords() {
 
         let res: Buffer;
         let x: number;
