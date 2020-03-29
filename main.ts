@@ -7,9 +7,11 @@ enum Commands {
     CMD_SENDDISTANCESENSORVALUE = 5,
     CMD_REQUESTSOUND = 6,
     CMD_SENDNAME = 7,
-    CMD_SENDMICTHRESHHOLD = 8,
+    CMD_SENDMICTHRESHOLD = 8,
     CMD_BINMOUTH = 9,
-    CMD_REQUESTMICANGLE = 10
+    CMD_REQUESTMICANGLE = 10,
+    CMD_REQUESTOBJCOORDS = 11,
+    CMD_REQUESTNAMECALLED = 12
 }
 
 enum DistanceSensors {
@@ -64,6 +66,8 @@ enum Sounds {
     //% block="Sound 8"
     //SOUND_EIGHT = 8
 }
+
+let voiceDetected: number = 0
 
 /**
  * Custom blocks
@@ -134,7 +138,7 @@ namespace Binbot {
     }
 
     /**
-    * Send name
+    * Send mic threshold
     * @param name set volume threshold for bot
     */
     //% block
@@ -149,7 +153,7 @@ namespace Binbot {
         threshold = min
       }
 
-      sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHHOLD, threshold, 0, 0))
+      sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHOLD, threshold, 0, 0))
 
     }
 
@@ -192,6 +196,83 @@ namespace Binbot {
             return null
         }
     }
+
+    /**
+    * Request Object Coords
+    */
+    //% block
+    export function requestObjectCoords(): tuple {
+
+        let res: Buffer;
+        let x: number;
+        let y: number;
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
+        res = receivePacket()
+        if (res != null) {
+            x = res.getNumber(NumberFormat.Int32LE, 4)
+            y = res.getNumber(NumberFormat.Int32LE, 8)
+            let coords: [x, y];
+        }
+        else {
+            console.log("Error requesting sensor data")
+            return null
+        }
+    }
+
+    /**
+    * Request Voice Detected
+    * @param sensor requests whether or not the voice command was detected
+    */
+    //% block
+    export function requestVoiceDetected(): number {
+
+        let res: Buffer;
+
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
+        res = receivePacket()
+        if (res != null) {
+            x = res.getNumber(NumberFormat.Int32LE, 4)
+            return x
+        }
+        else {
+            console.log("Error requesting sensor data")
+            return null
+        }
+    }
+
+    /**
+    * Request Voice Detected but we reset it to 0 in da code
+    * @param sensor requests whether or not the voice command was detected
+    */
+    //% block
+    export function requestVoiceDetected2ElectricBoogaloo(): number {
+
+        let res: Buffer;
+
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
+        res = receivePacket()
+        if (res != null) {
+            x = res.getNumber(NumberFormat.Int32LE, 4)
+            if (x = 1) {
+              voiceDetected = 1;
+            }
+        }
+        else {
+            console.log("Error requesting sensor data")
+            return null
+        }
+    }
+
+    /**
+    * Set voiceDetected back to 0
+    */
+    //% block
+    export function setVoiceDetected(): void {
+
+      voiceDetected = 0;
+
+    }
+
 
     export function sendNumbers(x: number, y: number, z: number): void {
 
