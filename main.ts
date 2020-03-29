@@ -7,7 +7,7 @@ enum Commands {
     CMD_SENDDISTANCESENSORVALUE = 5,
     CMD_REQUESTSOUND = 6,
     CMD_SENDNAME = 7,
-    CMD_SENDMICTHRESHHOLD = 8,
+    CMD_SENDMICTHRESHOLD = 8,
     CMD_BINMOUTH = 9,
     CMD_REQUESTMICANGLE = 10,
     CMD_REQUESTOBJCOORDS = 11
@@ -150,7 +150,7 @@ namespace Binbot {
         threshold = min
       }
 
-      sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHHOLD, threshold, 0, 0))
+      sendPacket(createNumberPacket(Commands.CMD_SENDMICTHRESHOLD, threshold, 0, 0))
 
     }
 
@@ -196,7 +196,6 @@ namespace Binbot {
 
     /**
     * Request Object Coords
-    * @param sensor requests angle at which sound was detected
     */
     //% block
     export function requestObjectCoords(): tuple {
