@@ -245,7 +245,7 @@ namespace Binbot {
     * @param sensor requests whether or not the voice command was detected
     */
     //% block
-    export function requestVoiceDetected2ElectricBoogaloo(): number {
+    export function requestVoiceDetected2ElectricBoogaloo(): void {
 
         let res: Buffer;
 
@@ -259,7 +259,6 @@ namespace Binbot {
         }
         else {
             console.log("Error requesting sensor data")
-            return null
         }
     }
 
