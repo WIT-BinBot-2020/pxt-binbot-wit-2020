@@ -253,7 +253,7 @@ namespace Binbot {
         res = receivePacket()
         if (res != null) {
             x = res.getNumber(NumberFormat.Int32LE, 4)
-            if (x = 1) {
+            if (x == 1) {
               voiceDetected = 1;
             }
         }
