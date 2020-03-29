@@ -113,7 +113,7 @@ while True:
 
     elif cmd == "CMD_GETMICTHRESHOLD":
         print("Retrieving mic voice detection threshold value of the Mic Array..")
-        voice_detection_threshold = ears.get_vad_threshold()
+        voice_detection_threshold = ears.get_scaled_vad_threshold()
         microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, voice_detection_threshold, 0, 0))
 
     elif cmd == "CMD_SENDKEYWORD":
