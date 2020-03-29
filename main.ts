@@ -206,12 +206,13 @@ namespace Binbot {
         let res: Buffer;
         let x: number;
         let y: number;
+        let coords: [number, number];
         sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             x = res.getNumber(NumberFormat.Int32LE, 4)
             y = res.getNumber(NumberFormat.Int32LE, 8)
-            let coords:tuple = [x, y];
+            coords = [x, y];
             return coords
         }
         else {
@@ -228,6 +229,7 @@ namespace Binbot {
     export function requestVoiceDetected(): number {
 
         let res: Buffer;
+        let x: number;
 
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
@@ -248,6 +250,7 @@ namespace Binbot {
     export function requestVoiceDetected2ElectricBoogaloo(): void {
 
         let res: Buffer;
+        let x: number;
 
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
