@@ -2,7 +2,7 @@ import paho.mqtt.client as paho
 import json
 
 # Define broker ip and port
-broker="34.245.132.242"
+broker="34.246.184.109"
 port=1883
 
 # Define message to be called when data is pubished
@@ -18,7 +18,7 @@ def publish(measurement, json_data):
 
     # Define which message is called when data is published
     client1.on_publish = on_publish                        
-
+	
     # Connect to the broker
     client1.connect(broker,port)
 
