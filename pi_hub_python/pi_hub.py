@@ -7,6 +7,7 @@
 
 import serial
 import packet_encoding
+from eyes import eyes
 from ears import ears
 from mouth import servo
 from sounds import sounds
@@ -64,6 +65,12 @@ microbitGatewaySerial = serial.Serial(
 # Start Up
 # # # # # # # # # # # # #
 
+# - - - EYES - - -
+# Starts the main Eyes threads. (Can be used to start a stopped thread too)
+eyes.start_object_detection_thread()
+# You can stop the threads with the below at any time.
+# eyes.stop_object_detection_thread()
+
 # - - - EARS - - -
 # Starts the main Ears threads. (Can be used to start a stopped thread too)
 ears.start_direction_of_arrival_thread()
@@ -105,7 +112,7 @@ while True:
     elif cmd == "CMD_CTRLOMNIDRIVE":
         print("Requesting to control Robotino movement..")
 
-    # - - - EYES ? - - -
+    # - - - EYES - - -
     elif cmd == "CMD_REQUESTDISTANCESENSOR":
         print("Request distance sensor data from the Robotino..")
 
@@ -114,6 +121,9 @@ while True:
 
     elif cmd == "CMD_REQUESTOBJCOORDS":
         print("Request most recently detected object's coordinates..")
+        object_coordinates = eyes.get_recently_found_object_coordinates()
+        microbitGatewaySerial.write(
+            packet_encoding.CreateNumberPacket(_cmd, object_coordinates[0], object_coordinates[1], 0))
 
     # - - - SOUND - - -
     elif cmd == "CMD_REQUESTSOUND":
@@ -130,7 +140,6 @@ while True:
 
     elif cmd == "CMD_SENDMICTHRESHOLD":
         print("Setting mic voice detection threshold value of the Mic Array..")
-        # TODO Add incoming variable to parameter
         ears.set_vad_threshold(make_code_requested_vad_threshold=rcv_msg.num1)
 
     elif cmd == "CMD_GETMICTHRESHOLD":
@@ -174,6 +183,3 @@ while True:
         print("Command not defined in module, invalid.")
 
     # time.sleep(1)
-    
-
-
