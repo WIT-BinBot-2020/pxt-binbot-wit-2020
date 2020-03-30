@@ -38,7 +38,7 @@ import threading
 print("EYES | Loading Eyes-Test.py Script")
 
 """ Public Global Variables set by the Use Case #1 thread and available for reference publicly """
-most_recent_object_coordinates = { "x": False, "y": False }
+most_recent_object_coordinates = [ False, False ]
 
 """ Private Global Variables """
 OPENMV_SERIAL_PORT = "/dev/serial/by-id/usb-OpenMV_OpenMV_Virtual_Comm_Port_in_FS_Mode_000000000011-if00"
@@ -75,7 +75,7 @@ def on_object_found(eyesStr):
         pass
    # Set result to global variable
    global most_recent_object_coordinates
-   most_recent_object_coordinates = { "x": coordinates_found[0], "y": coordinates_found[1] }
+   most_recent_object_coordinates = [ coordinates_found[0], coordinates_found[1] ]
 
 def _run_object_detection():
    """ Private: create a thread to continuously set recently found object coordinates from the OpenMV Camera """
@@ -94,7 +94,6 @@ def _run_object_detection():
       if _object_detection_stop_thread_flag:
             print("Object Detection Thread told to stop.")
             break
-      global most_recent_object_coordinates
 
 """ Set the target for the object_detection Thread """
 _object_detection_thread = threading.Thread(
