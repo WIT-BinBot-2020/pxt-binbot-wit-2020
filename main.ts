@@ -201,19 +201,17 @@ namespace Binbot {
     * Request Object Coords
     */
     //% block
-    export function requestObjectCoords() {
+    export function requestObjectCoords(): {x: number, y:number} {
 
         let res: Buffer;
         let x: number;
         let y: number;
-        let coords: [number, number];
         sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             x = res.getNumber(NumberFormat.Int32LE, 0)
             y = res.getNumber(NumberFormat.Int32LE, 4)
-            coords = [x, y];
-            return coords
+            return {x:x, y:y}
         }
         else {
             console.log("Error requesting sensor data")
