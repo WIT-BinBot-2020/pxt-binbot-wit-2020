@@ -50,6 +50,7 @@ def CreateStringPacket(cmd, str1):
     # Creating the final packet to be sent
     packet = bytearray(PAYLOAD_LENGTH)
     packet[0] = 0xbb
+    packet[1] = 0x00
     packet[2] = cmd
     packet[3 : MESSAGE_LENGTH + 3] = msg
 
@@ -76,6 +77,7 @@ def CreateNumberPacket(cmd, num1, num2, num3):
     # Creating the final packet to be sent
     packet = bytearray(PAYLOAD_LENGTH)
     packet[0] = 0xbb
+    packet[1] = 0x00
     packet[2] = cmd
     packet[3 : MESSAGE_LENGTH + 3] = msg
 
