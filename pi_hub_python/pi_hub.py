@@ -1,21 +1,26 @@
-# Main Raspberry Pi Hub file for handling interaction
-# between Microbit Gateway, Robotino and other BinBot
-# functionalities
+# Raspberry Pi Hub Code for BinBot
+# Author: Wei Kit Wong
+# Waterford Institute of Technology
+# IOT Applications in the Robotics Lab
 
-# Made by Wei Kit Wong
-# # # # # # # # # # # #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Main Raspberry Pi Hub file for handling interaction
+# between Microbit Gateway, Robotino and providing other
+# functionalities
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 import serial
+import time
+
+print("RPi Hub | Loading All Dependencies")
+
 import packet_encoding
+from eyes import eyes
 from ears import ears
 from mouth import servo
 from sounds import sounds
-import time
 
-# # # # # # # # # # # #
-# Variables
-# # # # # # # # # # # #
-
+""" Global Variables used by the RPi Hub """
 # Mapping of command numbers and their associated system functionality
 COMMANDS = [
     "CMD_TEST", #= 0,
@@ -52,17 +57,32 @@ COMMANDS = [
 ]
 """
 
-# Serial connection to Microbit Gateway for R/W messages
-microbitGatewaySerial = serial.Serial(
-    port='/dev/ttyACM0',
-    baudrate=115200,
-    timeout=1
-)
+""" Establishing serial connection to Microbit Gateway for R/W messages  """
+microbitGatewaySerial = False
+while not microbitGatewaySerial:
+    try:
+        microbitGatewaySerial = serial.Serial(
+            port='/dev/ttyACM0',
+            baudrate=115200,
+            timeout=0
+        )
+    except Exception as ex:
+        print("RPi Hub | Looking for Microbit Gateway")
+        time.sleep(1)
 
+if microbitGatewaySerial:
+    print("RPi Hub | Found Microbit Gateway")
 
+""" RPi Hub Operations """    
 # # # # # # # # # # # # #
 # Start Up
 # # # # # # # # # # # # #
+
+# - - - EYES - - -
+# Starts the main Eyes threads. (Can be used to start a stopped thread too)
+eyes.start_object_detection_thread()
+# You can stop the threads with the below at any time.
+# eyes.stop_object_detection_thread()
 
 # - - - EARS - - -
 # Starts the main Ears threads. (Can be used to start a stopped thread too)
@@ -83,7 +103,7 @@ while True:
     fromMicrobitGateway = microbitGatewaySerial.readline()
 
     if len(fromMicrobitGateway) != packet_encoding.PAYLOAD_LENGTH:
-        print("Invalid payload length, message __not__ from the Microbit Gateway detected.")
+        # print("RPi Hub | Invalid incoming message")
         continue
 
     _cmd = fromMicrobitGateway[2]
@@ -94,71 +114,62 @@ while True:
     # Switch case -> perform y functionality if x
     # - - - MOVEMENT - - -
     if cmd == "CMD_TEST":
-        print("Writing data to Robotino..")
+        print("RPi Hub | Writing message to Robotino")
 
     elif cmd == "CMD_SENDSTRING":
-        print("Sending a string to Robotino..")
+        print("RPi Hub | Sending a string to Robotino")
 
     elif cmd == "CMD_SENDNUMBERS":
-        print("Sending numbers to Robotino..")
+        print("RPi Hub | Sending numbers to Robotino")
 
     elif cmd == "CMD_CTRLOMNIDRIVE":
-        print("Requesting to control Robotino movement..")
+        print("RPi Hub | Requesting to control Robotino movement")
 
-    # - - - EYES ? - - -
+    # - - - EYES - - -
     elif cmd == "CMD_REQUESTDISTANCESENSOR":
-        print("Request distance sensor data from the Robotino..")
+        print("RPi Hub | Request distance sensor data from the Robotino")
 
     elif cmd == "CMD_SENDDISTANCESENSORVALUE":
-        print("Sending a distance sensor value to the Robotino..")
+        print("RPi Hub | Sending a distance sensor value to the Robotino")
 
     elif cmd == "CMD_REQUESTOBJCOORDS":
-        print("Request most recently detected object's coordinates..")
+        print("RPi Hub | Request most recently detected object's coordinates")
+        object_coordinates = eyes.get_recently_found_object_coordinates()
+        microbitGatewaySerial.write(
+            packet_encoding.CreateNumberPacket(_cmd, object_coordinates[0], object_coordinates[1], 0))
 
     # - - - SOUND - - -
     elif cmd == "CMD_REQUESTSOUND":
-        print("Playing sound..")
+        print("RPi Hub | Playing sound..")
         sounds.play_sound(rcv_msg.num1)
 
     # - - - EARS - - -
-    # elif cmd == "CMD_REQUESTDOAANGLE":
     elif cmd == "CMD_REQUESTMICANGLE":
-        print("Request direction of arrival angle data from the Mic Array..")
+        print("RPi Hub | Request direction of arrival angle data from the Mic Array")
         doa_angle = ears.get_scaled_voice_detection_angle()
-        microbitGatewaySerial.write(
-            packet_encoding.CreateNumberPacket(_cmd, doa_angle, 0, 0))
+        microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, doa_angle, 0, 0))
 
     elif cmd == "CMD_SENDMICTHRESHOLD":
-        print("Setting mic voice detection threshold value of the Mic Array..")
-        # TODO Add incoming variable to parameter
+        print("RPi Hub | Setting mic voice detection threshold value of the Mic Array")
         ears.set_vad_threshold(make_code_requested_vad_threshold=rcv_msg.num1)
 
     elif cmd == "CMD_GETMICTHRESHOLD":
-        print("Retrieving mic voice detection threshold value of the Mic Array..")
+        print("RPi Hub | Retrieving mic voice detection threshold value of the Mic Array")
         voice_detection_threshold = ears.get_scaled_vad_threshold()
         microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, voice_detection_threshold, 0, 0))
 
-    # elif cmd == "CMD_SENDKEYWORD":
     elif cmd == "CMD_SENDNAME":
-        print("Setting keyword for Mic Array voice recognition..")
+        print("RPi Hub | Setting keyword for Mic Array voice recognition")
         ears.add_user_keyword(keyword=rcv_msg.str1)
 
     # NOTE: This may not be feasable given the list it will return is longer than a few characters...LIMIT>?
     elif cmd == "CMD_GETKEYWORDS":
-        print("Retreive keywords for Mic Array voice recognition..")
+        print("RPi Hub | Retreive keywords for Mic Array voice recognition")
         keywords_list = ears.get_user_keywords()
         # microbitGatewaySerial.write(packet_encoding.CreateStringPacket(_cmd, keywords_list, 0,0))
 
     elif cmd == "CMD_REQUESTNAMECALLED":
-        print("Checking whether keyword was called or not..")
-
-        """
-        if ears.has_recognised_keyword and not is_keyword_event_sent_to_make_code:
-            microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, 1, 0, 0))
-            is_keyword_event_sent_to_make_code = True
-            ears.has_recognised_keyword = False
-        """
-
+        print("RPi Hub | Checking whether keyword was called or not")
         recognised_keyword = ears.has_recognised_keyword and 1 or 0
         microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, recognised_keyword, 0, 0))
         is_keyword_event_sent_to_make_code = True
@@ -167,13 +178,8 @@ while True:
 
     # - - - MOUTH - - -
     elif cmd == "CMD_BINMOUTH":
-        print("Sending action to BinBot's ServoMouth..")
-        servo.mouth(rcv_msg.num1)
+        print("RPi Hub | Sending action to ServoMouth")
+        # servo.mouth(rcv_msg.num1)
 
     else:
-        print("Command not defined in module, invalid.")
-
-    # time.sleep(1)
-    
-
-
+        print("RPi Hub | Valid incoming message but invalid command")
