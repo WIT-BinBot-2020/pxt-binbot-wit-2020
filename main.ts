@@ -225,7 +225,7 @@ namespace Binbot {
     */
     //% block
     export function objectCoords(): {x:number, y:number} {
-      console.log({x:objX, y:objY})
+      //console.log({x:objX, y:objY})
       return {x:objX, y:objY}
     }
 
