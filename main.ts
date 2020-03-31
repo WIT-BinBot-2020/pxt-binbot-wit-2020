@@ -184,8 +184,9 @@ namespace Binbot {
             x = res.getNumber(NumberFormat.Int32LE, 0)
             //A - B = 0 - 360
             //C - D = 0- 255
-            let y = (x / 255) * 360
-            return Math.abs(y)
+            //let y = (x / 255) * 360
+            //return Math.abs(y)
+            return x
         }
         else {
             console.log("Error requesting sensor data")
