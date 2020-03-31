@@ -177,10 +177,6 @@ namespace Binbot {
 
         let res: Buffer;
         let x: number = 0;
-        let A: number = 0;
-        let B: number = 255;
-        let C: number = 0;
-        let D: number = 360;
 
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
@@ -188,8 +184,8 @@ namespace Binbot {
             x = res.getNumber(NumberFormat.Int32LE, 0)
             //A - B = 0 - 360
             //C - D = 0- 255
-            let y = (x - A)/(B - A) * (D - C) + C
-            return y
+            let y = (x / 255) * 360
+            return Math.abs(y)
         }
         else {
             console.log("Error requesting sensor data")
