@@ -68,6 +68,8 @@ enum Sounds {
 }
 
 let voiceDetected: number = 0
+let objX: number = 0
+let objY: number = 0
 
 /**
  * Custom blocks
@@ -181,7 +183,9 @@ namespace Binbot {
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
+            console.log("Response: "+ res)
             x = res.getNumber(NumberFormat.Int32LE, 0)
+            console.log(x)
             //A - B = 0 - 360
             //C - D = 0- 255
             //let y = (x / 255) * 360
@@ -198,7 +202,7 @@ namespace Binbot {
     * Request Object Coords
     */
     //% block
-    export function requestObjectCoords(): {x: number, y:number} {
+    export function requestObjectCoords(): void {
 
         let res: Buffer;
         let x: number;
@@ -206,14 +210,23 @@ namespace Binbot {
         sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 0)
-            y = res.getNumber(NumberFormat.Int32LE, 4)
-            return {x:x, y:y}
+            console.log("Response: "+ res)
+            objX = res.getNumber(NumberFormat.Int32LE, 0)
+            objY = res.getNumber(NumberFormat.Int32LE, 4)
+            console.log(objX, objY)
         }
         else {
             console.log("Error requesting sensor data")
-            return null
         }
+    }
+
+    /**
+    * Returns object coords
+    */
+    //% block
+    export function objectCoords(): {x:number, y:number} {
+      console.log({x:objX, y:objY})
+      return {x:objX, y:objY}
     }
 
     /**
@@ -229,7 +242,9 @@ namespace Binbot {
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
+            console.log("Response: "+ res)
             x = res.getNumber(NumberFormat.Int32LE, 0)
+            console.log(x)
             return x
         }
         else {
@@ -250,7 +265,9 @@ namespace Binbot {
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
+            console.log("Response: "+ res)
             x = res.getNumber(NumberFormat.Int32LE, 0)
+            console.log(x)
             if (x == 1) {
               voiceDetected = 1;
             }
