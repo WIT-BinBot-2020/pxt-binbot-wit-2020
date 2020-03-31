@@ -185,7 +185,7 @@ namespace Binbot {
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
             //A - B = 0 - 360
             //C - D = 0- 255
             let y = (x - A)/(B - A) * (D - C) + C
@@ -210,8 +210,8 @@ namespace Binbot {
         sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
-            y = res.getNumber(NumberFormat.Int32LE, 8)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
+            y = res.getNumber(NumberFormat.Int32LE, 4)
             coords = [x, y];
             return coords
         }
@@ -234,7 +234,7 @@ namespace Binbot {
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
             return x
         }
         else {
@@ -255,7 +255,7 @@ namespace Binbot {
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
             if (x == 1) {
               voiceDetected = 1;
             }
