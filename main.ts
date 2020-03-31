@@ -221,12 +221,19 @@ namespace Binbot {
     }
 
     /**
-    * Returns object coords
+    * Returns object x
     */
     //% block
-    export function objectCoords(): {x:number, y:number} {
-      //console.log({x:objX, y:objY})
-      return {x:objX, y:objY}
+    export function objectX():number {
+      return objX
+    }
+
+    /**
+    * Returns object y
+    */
+    //% block
+    export function objectY():number {
+      return objY
     }
 
     /**
