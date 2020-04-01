@@ -186,7 +186,7 @@ namespace Binbot {
         res = receivePacket()
         if (res != null) {
             //console.log("Response: "+ res)
-            x = res.getNumber(NumberFormat.Int32LE, 4)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
             //console.log(x)
             //A - B = 0 - 360
             //C - D = 0- 255
