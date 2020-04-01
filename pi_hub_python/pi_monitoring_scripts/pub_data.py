@@ -24,7 +24,9 @@ def publish(measurement, json_data):
 
     # Publish data to the broker. Be sure to use json.dumps to convert the json data to a string
     ret= client1.publish("binBot/"+measurement, json.dumps(json_data))
-
+    
+    print("Disconnecting")
+    client1.disconnect()
 
 # Test Code - Uncomment for testing
 """
