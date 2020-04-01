@@ -70,7 +70,7 @@ def on_object_found(eyesStr):
    coordinates_found = []
    for t in eyesStr.split():
     try:
-        coordinates_found.append(float(t))
+        coordinates_found.append(int(t))
     except ValueError:
         pass
    # Set result to global variable
