@@ -179,20 +179,19 @@ namespace Binbot {
 
         let res: Buffer;
         let x: number = 0;
-        //let y: number = 0;
+        let y: number = 0;
 
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             //console.log("Response: "+ res)
-            x = res.getNumber(NumberFormat.Int32LE, 4)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
             //console.log(x)
             //A - B = 0 - 360
             //C - D = 0- 255
-            //y = (x / 255) * 360
+            y = (x / 255) * 360
             //console.log(y)
-            //return Math.abs(y)
-            return x
+            return y
         }
         else {
             console.log("Error requesting sensor data")
@@ -269,13 +268,7 @@ namespace Binbot {
         res = receivePacket()
         if (res != null) {
             //console.log("Response: "+ res)
-            x = res.getNumber(NumberFormat.Int32LE, 0)
-            if ( x == 0){
-              voiceDetected = 0
-            }
-            else{
-              voiceDetected = 1
-            }
+            voiceDetected = res.getNumber(NumberFormat.Int32LE, 0)
             //console.log(x)
         }
         else {
