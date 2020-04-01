@@ -264,11 +264,18 @@ namespace Binbot {
     export function requestVoiceDetected(): void {
 
         let res: Buffer;
+        let x: number;
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             //console.log("Response: "+ res)
-            voiceDetected = res.getNumber(NumberFormat.Int32LE, 0)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
+            if ( x == 0){
+              voiceDetected = 0
+            }
+            else{
+              voiceDetected = 1
+            }
             //console.log(x)
         }
         else {
