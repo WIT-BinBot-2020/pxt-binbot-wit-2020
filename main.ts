@@ -67,6 +67,7 @@ enum Sounds {
     //SOUND_EIGHT = 8
 }
 
+let micDirectionOfArival: number = 0
 let voiceDetected: number = 0
 let objX: number = 0
 let objY: number = 0
@@ -175,28 +176,35 @@ namespace Binbot {
     * @param sensor requests angle at which sound was detected
     */
     //% block
-    export function requestMicAngle(): number {
+    export function requestMicAngle(): void {
 
         let res: Buffer;
         let x: number = 0;
-        let y: number = 0;
+        //let y: number = 0;
 
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             //console.log("Response: "+ res)
-            x = res.getNumber(NumberFormat.Int32LE, 0)
+            x = res.getNumber(NumberFormat.Int32LE, 4)
             //console.log(x)
             //A - B = 0 - 360
             //C - D = 0- 255
-            y = (x / 255) * 360
+            micDirectionOfArival = (x / 255) * 360
             //console.log(y)
-            return y
+            //return Math.abs(y)
         }
         else {
             console.log("Error requesting sensor data")
-            return null
         }
+    }
+
+    /**
+    * Returns the angle from which the mic detected its keyword
+    */
+    //% block
+    export function micAngleDetected():number {
+      return micDirectionOfArival
     }
 
     /**
@@ -263,7 +271,6 @@ namespace Binbot {
     export function requestVoiceDetected(): void {
 
         let res: Buffer;
-        let x: number;
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
