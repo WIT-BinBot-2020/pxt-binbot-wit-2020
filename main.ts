@@ -236,48 +236,40 @@ namespace Binbot {
       return objY
     }
 
-    /**
-    * Request Voice Detected
-    * @param sensor requests whether or not the voice command was detected
-    */
-    //% block
-    export function requestVoiceDetected(): number {
-
-        let res: Buffer;
-        let x: number;
-
-        sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
-        res = receivePacket()
-        if (res != null) {
-            //console.log("Response: "+ res)
-            x = res.getNumber(NumberFormat.Int32LE, 0)
-            //console.log(x)
-            return x
-        }
-        else {
-            console.log("Error requesting sensor data")
-            return null
-        }
-    }
+    // /**
+    // * Request Voice Detected
+    // * @param sensor requests whether or not the voice command was detected
+    // */
+    // //% block
+    // export function requestVoiceDetected(): void {
+    //
+    //     let res: Buffer;
+    //
+    //     sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
+    //     res = receivePacket()
+    //     if (res != null) {
+    //         //console.log("Response: "+ res)
+    //         voiceDetected = res.getNumber(NumberFormat.Int32LE, 0)
+    //         //console.log(x)
+    //     }
+    //     else {
+    //         console.log("Error requesting sensor data")
+    //     }
+    // }
 
     /**
     * Request Voice Detected but we reset it to 0 in da code
     */
     //% block
-    export function requestVoiceDetected2ElectricBoogaloo(): void {
+    export function requestVoiceDetected(): void {
 
         let res: Buffer;
-        let x: number;
-
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             //console.log("Response: "+ res)
-            x = res.getNumber(NumberFormat.Int32LE, 0)
+            voiceDetected = res.getNumber(NumberFormat.Int32LE, 0)
             //console.log(x)
-            if (x == 1) {
-              voiceDetected = 1;
-            }
         }
         else {
             console.log("Error requesting sensor data")
@@ -288,10 +280,16 @@ namespace Binbot {
     * Set voiceDetected back to 0
     */
     //% block
-    export function setVoiceDetected(): void {
-
+    export function resetVoiceDetected(): void {
       voiceDetected = 0;
+    }
 
+    /**
+    * Returns voiceDetected
+    */
+    //% block
+    export function keywordDetected(): number {
+      return voiceDetected
     }
 
 
