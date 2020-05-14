@@ -143,10 +143,12 @@ namespace Binbot {
     }
 
     /**
-    * Send message to slack
-    * @param message message to send to slack
+    * Send simple message to slack bot
+    * @param message message to send to slack bot
     */
     //% block
+    //% slackMsg.length.min=0 slackMsg.length.max= 12 slackMsg.length.defl="HelloWorld"
+
     export function sendMessage(slackMsg: string): void {
 
       sendPacket(createStringPacket(Commands.CMD_SENDMESSAGE, slackMsg))
