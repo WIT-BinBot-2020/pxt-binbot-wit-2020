@@ -2,7 +2,7 @@ import paho.mqtt.client as paho
 import json
 
 # Define broker ip and port
-broker="34.246.184.109"
+broker="52.19.82.33"
 port=1883
 
 # Define message to be called when data is pubished
