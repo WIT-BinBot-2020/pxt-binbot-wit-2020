@@ -19,6 +19,7 @@ from eyes import eyes
 from ears import ears
 from mouth import servo
 from sounds import sounds
+from pi_monitoring_scripts.pub_data import publish
 
 """ Global Variables used by the RPi Hub """
 # Mapping of command numbers and their associated system functionality
@@ -35,7 +36,9 @@ COMMANDS = [
     "CMD_BINMOUTH", #= 9,
     "CMD_REQUESTMICANGLE", #= 10,
     "CMD_REQUESTOBJCOORDS", #= 11,
-    "CMD_REQUESTNAMECALLED" #= 12
+    "CMD_REQUESTNAMECALLED", #= 12
+    "",
+    "CMD_SENDMESSAGE", #= 14
 ]
 
 # Outdated command numbers mapping, to be discussed
@@ -180,6 +183,19 @@ while True:
     elif cmd == "CMD_BINMOUTH":
         print("RPi Hub | Sending action to ServoMouth")
         # servo.mouth(rcv_msg.num1)
+
+    # - - - CLOUD - - -
+    elif cmd == "CMD_SENDMESSAGE":
+        print("RPi Hub | Sending message to Slack Bot")
+        messageFromMakeCode = rcv_msg.str1
+
+        # Generate json data
+        data = {
+            "message": messageFromMakeCode,
+        }
+        # Define which measurement the data belongs to. Battery stats for example
+        measurement = "messages" 
+        publish(measurement, data)
 
     else:
         print("RPi Hub | Valid incoming message but invalid command")
