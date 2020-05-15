@@ -6,11 +6,11 @@ print("sounds.py | Loading Sounds.py Script")
 
 # All Sound files
 sounds = [
-    (0, '/home/pi/IoT-Apps-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/mouthOpen.wav'),
-    (1, '/home/pi/IoT-Apps-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/mouthClose.wav'),
-    (2, '/home/pi/IoT-Apps-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/robotStop.wav'),
-    (3, '/home/pi/IoT-Apps-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/shutdown.wav'),
-    (4, '/home/pi/IoT-Apps-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/startup.wav')
+    (0, '/home/pi/IoT-Applications-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/mouthOpen.wav'),
+    (1, '/home/pi/IoT-Applications-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/mouthClose.wav'),
+    (2, '/home/pi/IoT-Applications-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/robotStop.wav'),
+    (3, '/home/pi/IoT-Applications-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/shutdown.wav'),
+    (4, '/home/pi/IoT-Applications-2020/pxt-binbot-wit-2020/pi_hub_python/assets/sound_files/startup.wav')
 ]
 sounds = dict(sounds)
 
