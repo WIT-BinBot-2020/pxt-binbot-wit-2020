@@ -9,12 +9,11 @@ enum Commands {
     CMD_SENDNAME = 7,
     CMD_SENDMICTHRESHOLD = 8,
     CMD_BINMOUTH = 9,
-    // CMD_REQUESTMICANGLE = 10,
+    CMD_REQUESTMICANGLE = 10,
     CMD_REQUESTOBJCOORDS = 11,
     CMD_REQUESTNAMECALLED = 12,
-    //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
-    CMD_SENDMESSAGE = 14,
-    CMD_REQUESTMICANGLE = 15
+    // CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
+    CMD_SENDMESSAGE = 14
 }
 
 enum DistanceSensors {
@@ -188,49 +187,31 @@ namespace Binbot {
     }
 
     /**
-    * Request mic angle detected
+    * Request Mic Angle
     * @param sensor requests angle at which sound was detected
     */
     //% block
     export function requestMicAngle(): void {
+
         let res: Buffer;
-        
+        let x: number = 0;
+
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            micDirectionOfArival = ((res.getNumber(NumberFormat.Int32LE, 0)) / 255) * 360
+            //console.log("Response: "+ res)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
+            //console.log(x)
+            //A - B = 0 - 360
+            //C - D = 0- 255
+            micDirectionOfArival = (x / 255) * 360
+            //console.log(y)
+            //return Math.abs(y)
         }
         else {
             console.log("Error requesting sensor data")
         }
     }
-
-    /**
-    * Request Mic Angle
-    * @param sensor requests angle at which sound was detected
-    */
-    //% block
-    // export function requestMicAngle(): void {
-
-    //     let res: Buffer;
-    //     let x: number = 0;
-
-    //     sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
-    //     res = receivePacket()
-    //     if (res != null) {
-    //         //console.log("Response: "+ res)
-    //         x = res.getNumber(NumberFormat.Int32LE, 0)
-    //         //console.log(x)
-    //         //A - B = 0 - 360
-    //         //C - D = 0- 255
-    //         micDirectionOfArival = (x / 255) * 360
-    //         //console.log(y)
-    //         //return Math.abs(y)
-    //     }
-    //     else {
-    //         console.log("Error requesting sensor data")
-    //     }
-    // }
 
     /**
     * Returns the angle from which the mic detected its keyword

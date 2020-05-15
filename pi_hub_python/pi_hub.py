@@ -34,32 +34,12 @@ COMMANDS = [
     "CMD_SENDNAME", #= 7,
     "CMD_SENDMICTHRESHOLD", #= 8,
     "CMD_BINMOUTH", #= 9,
-    # "CMD_REQUESTMICANGLE", #= 10,
+    "CMD_REQUESTMICANGLE", #= 10,
     "CMD_REQUESTOBJCOORDS", #= 11,
     "CMD_REQUESTNAMECALLED", #= 12
-    "",
+    "", #= 13
     "CMD_SENDMESSAGE", #= 14
-    "CMD_REQUESTMICANGLE" #=15
 ]
-
-# Outdated command numbers mapping, to be discussed
-"""
-COMMANDS = [
-    "CMD_TEST",
-    "CMD_SENDSTRING",
-    "CMD_SENDNUMBERS",
-    "CMD_CTRLOMNIDRIVE",
-    "CMD_REQUESTDISTANCESENSOR",
-    "CMD_SENDDISTANCESENSORVALUE",
-    "CMD_REQUESTSOUND",
-    "CMD_REQUESTDOAANGLE",
-    "CMD_SENDMICTHRESHOLD",
-    "CMD_GETMICTHRESHOLD",
-    "CMD_SENDKEYWORD",
-    "CMD_GETKEYWORDS",
-    "CMD_BINMOUTH",
-]
-"""
 
 """ Establishing serial connection to Microbit Gateway for R/W messages  """
 microbitGatewaySerial = False
@@ -131,27 +111,29 @@ while True:
     elif cmd == "CMD_CTRLOMNIDRIVE":
         print("RPi Hub | Requesting to control Robotino movement")
 
-    # - - - EYES - - -
     elif cmd == "CMD_REQUESTDISTANCESENSOR":
         print("RPi Hub | Request distance sensor data from the Robotino")
         print("RPi Hub | Distance sensor to be requested for: %d" % rcv_msg.num1)
 
-    # NOTE: Not used in MakeCode
+    # NOTE: Not developed in actual MakeCode Editor
     elif cmd == "CMD_SENDDISTANCESENSORVALUE":
         print("RPi Hub | Sending a distance sensor value to the Robotino")
 
+
+    # - - - EYES - - -
     elif cmd == "CMD_REQUESTOBJCOORDS":
         print("RPi Hub | Request most recently detected object's coordinates")
         object_coordinates = eyes.get_recently_found_object_coordinates()
         print("RPi Hub | Object's coordinates detected: X%d Y%d" % (object_coordinates[0], object_coordinates[1]))
-        microbitGatewaySerial.write(
-            packet_encoding.CreateNumberPacket(_cmd, object_coordinates[0], object_coordinates[1], 0))
+        microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, object_coordinates[0], object_coordinates[1], 0))
+
 
     # - - - SOUND - - -
     elif cmd == "CMD_REQUESTSOUND":
         print("RPi Hub | Playing sound..")
         print("RPi Hub | Sound number to be played: %d" % rcv_msg.num1)
         sounds.play_sound(rcv_msg.num1)
+
 
     # - - - EARS - - -
     elif cmd == "CMD_REQUESTMICANGLE":
@@ -179,9 +161,9 @@ while True:
     # NOTE: This may not be feasable given the list it will return is longer than a few characters...LIMIT>?
     elif cmd == "CMD_GETKEYWORDS":
         print("RPi Hub | Retreive keywords for Mic Array voice recognition")
-        keywords_list = ears.get_user_keywords()
+        # keywords_list = ears.get_user_keywords()
         print("RPi Hub | Keywords found:")
-        print(keywords_list)
+        # print(keywords_list)
         # microbitGatewaySerial.write(packet_encoding.CreateStringPacket(_cmd, keywords_list, 0,0))
 
     elif cmd == "CMD_REQUESTNAMECALLED":
@@ -197,7 +179,8 @@ while True:
     elif cmd == "CMD_BINMOUTH":
         print("RPi Hub | Sending action to ServoMouth")
         print("RPi Hub | Action number sent to ServoMouth: %d" % rcv_msg.num1)
-        # servo.mouth(rcv_msg.num1)
+        servo.mouth(rcv_msg.num1)
+
 
     # - - - CLOUD - - -
     elif cmd == "CMD_SENDMESSAGE":
@@ -205,13 +188,10 @@ while True:
         messageFromMakeCode = rcv_msg.str1
         print("RPi Hub | Message to be sent to Slack Bot: %s" % messageFromMakeCode)
 
-        # Generate json data
-        data = {
-            "message": messageFromMakeCode,
-        }
-        # Define which measurement the data belongs to. Battery stats for example
+        data = { "message": messageFromMakeCode }
         measurement = "messages" 
         publish(measurement, data)
+
 
     else:
         print("RPi Hub | Valid incoming message but invalid command")
