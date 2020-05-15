@@ -34,11 +34,12 @@ COMMANDS = [
     "CMD_SENDNAME", #= 7,
     "CMD_SENDMICTHRESHOLD", #= 8,
     "CMD_BINMOUTH", #= 9,
-    "CMD_REQUESTMICANGLE", #= 10,
+    # "CMD_REQUESTMICANGLE", #= 10,
     "CMD_REQUESTOBJCOORDS", #= 11,
     "CMD_REQUESTNAMECALLED", #= 12
     "",
     "CMD_SENDMESSAGE", #= 14
+    "CMD_REQUESTMICANGLE" #=15
 ]
 
 # Outdated command numbers mapping, to be discussed

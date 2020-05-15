@@ -9,11 +9,12 @@ enum Commands {
     CMD_SENDNAME = 7,
     CMD_SENDMICTHRESHOLD = 8,
     CMD_BINMOUTH = 9,
-    CMD_REQUESTMICANGLE = 10,
+    // CMD_REQUESTMICANGLE = 10,
     CMD_REQUESTOBJCOORDS = 11,
     CMD_REQUESTNAMECALLED = 12,
     //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
-    CMD_SENDMESSAGE = 14
+    CMD_SENDMESSAGE = 14,
+    CMD_REQUESTMICANGLE = 15
 }
 
 enum DistanceSensors {
@@ -194,7 +195,7 @@ namespace Binbot {
     export function requestMicAngle(): void {
         let res: Buffer;
         
-        sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 1, 0, 0))
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             micDirectionOfArival = ((res.getNumber(NumberFormat.Int32LE, 0)) / 255) * 360
