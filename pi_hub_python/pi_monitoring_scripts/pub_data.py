@@ -7,7 +7,7 @@ port=1883
 
 # Define message to be called when data is pubished
 def on_publish(client,userdata,result):
-        print("data published \n")
+        #print("data published \n" + userdata)
         pass
 
 
@@ -25,16 +25,14 @@ def publish(measurement, json_data):
     # Publish data to the broker. Be sure to use json.dumps to convert the json data to a string
     ret= client1.publish("binBot/"+measurement, json.dumps(json_data))
     
-    print("Disconnecting")
     client1.disconnect()
 
-# Test Code - Uncomment for testing
-"""
-data = {
-    "cpu": 50,
-    "ram": 76
-    }
+# Test Code - Uncomment for testing"
 
-publish("systemUsage", data)
-"""
+#data = {
+#    "message": "Test",
+#    }
+
+#publish("messages", data)
+
 
