@@ -121,9 +121,11 @@ while True:
 
     elif cmd == "CMD_SENDSTRING":
         print("RPi Hub | Sending a string to Robotino")
+        print("RPi Hub | String to be sent: %s" % rcv_msg.str1)
 
     elif cmd == "CMD_SENDNUMBERS":
         print("RPi Hub | Sending numbers to Robotino")
+        print("RPi Hub | Numbers to be sent: %d %d %d" % (rcv_msg.num1, rcv_msg.num2, rcv_msg.num3))
 
     elif cmd == "CMD_CTRLOMNIDRIVE":
         print("RPi Hub | Requesting to control Robotino movement")
@@ -131,49 +133,60 @@ while True:
     # - - - EYES - - -
     elif cmd == "CMD_REQUESTDISTANCESENSOR":
         print("RPi Hub | Request distance sensor data from the Robotino")
+        print("RPi Hub | Distance sensor to be requested for: %d" % rcv_msg.num1)
 
+    # NOTE: Not used in MakeCode
     elif cmd == "CMD_SENDDISTANCESENSORVALUE":
         print("RPi Hub | Sending a distance sensor value to the Robotino")
 
     elif cmd == "CMD_REQUESTOBJCOORDS":
         print("RPi Hub | Request most recently detected object's coordinates")
         object_coordinates = eyes.get_recently_found_object_coordinates()
+        print("RPi Hub | Object's coordinates detected: X%d Y%d" % (object_coordinates[0], object_coordinates[1]))
         microbitGatewaySerial.write(
             packet_encoding.CreateNumberPacket(_cmd, object_coordinates[0], object_coordinates[1], 0))
 
     # - - - SOUND - - -
     elif cmd == "CMD_REQUESTSOUND":
         print("RPi Hub | Playing sound..")
+        print("RPi Hub | Sound number to be played: %d" % rcv_msg.num1)
         sounds.play_sound(rcv_msg.num1)
 
     # - - - EARS - - -
     elif cmd == "CMD_REQUESTMICANGLE":
         print("RPi Hub | Request direction of arrival angle data from the Mic Array")
         doa_angle = ears.get_scaled_voice_detection_angle()
+        print("RPi Hub | Direction of arrival angle to be sent back: %d" % doa_angle)
         microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, doa_angle, 0, 0))
 
     elif cmd == "CMD_SENDMICTHRESHOLD":
         print("RPi Hub | Setting mic voice detection threshold value of the Mic Array")
+        print("RPi Hub | Mic voice detection threshold value to be set: %d" % rcv_msg.num1)
         ears.set_vad_threshold(make_code_requested_vad_threshold=rcv_msg.num1)
 
     elif cmd == "CMD_GETMICTHRESHOLD":
         print("RPi Hub | Retrieving mic voice detection threshold value of the Mic Array")
         voice_detection_threshold = ears.get_scaled_vad_threshold()
+        print("RPi Hub | Mic voice detection threshold value to be sent back: %d" % voice_detection_threshold)
         microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, voice_detection_threshold, 0, 0))
 
     elif cmd == "CMD_SENDNAME":
         print("RPi Hub | Setting keyword for Mic Array voice recognition")
+        print("RPi Hub | Keyword to be added: %s" % rcv_msg.str1)
         ears.add_user_keyword(keyword=rcv_msg.str1)
 
     # NOTE: This may not be feasable given the list it will return is longer than a few characters...LIMIT>?
     elif cmd == "CMD_GETKEYWORDS":
         print("RPi Hub | Retreive keywords for Mic Array voice recognition")
         keywords_list = ears.get_user_keywords()
+        print("RPi Hub | Keywords found:")
+        print(keywords_list)
         # microbitGatewaySerial.write(packet_encoding.CreateStringPacket(_cmd, keywords_list, 0,0))
 
     elif cmd == "CMD_REQUESTNAMECALLED":
         print("RPi Hub | Checking whether keyword was called or not")
         recognised_keyword = ears.has_recognised_keyword and 1 or 0
+        print("RPi Hub | Keyword recognised value to be sent back: %d" % recognised_keyword)
         microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, recognised_keyword, 0, 0))
         is_keyword_event_sent_to_make_code = True
         ears.has_recognised_keyword = False
@@ -182,12 +195,14 @@ while True:
     # - - - MOUTH - - -
     elif cmd == "CMD_BINMOUTH":
         print("RPi Hub | Sending action to ServoMouth")
+        print("RPi Hub | Action number sent to ServoMouth: %d" % rcv_msg.num1)
         # servo.mouth(rcv_msg.num1)
 
     # - - - CLOUD - - -
     elif cmd == "CMD_SENDMESSAGE":
         print("RPi Hub | Sending message to Slack Bot")
         messageFromMakeCode = rcv_msg.str1
+        print("RPi Hub | Message to be sent to Slack Bot: %s" % messageFromMakeCode)
 
         # Generate json data
         data = {
