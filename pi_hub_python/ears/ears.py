@@ -26,6 +26,8 @@ import time
 import usb.util
 import usb.core
 from .tuning import Tuning
+from pi_monitoring_scripts.pub_data import publish
+
 print("EARS | Loading Ears.py Script")
 
 
@@ -45,6 +47,7 @@ scaled_vad_threshold_to_255 = vad_threshold / 1000 * 255
 
 """ Private Global Variables """
 vad_range_max = 1000  # Limit Set by MicArray Tuning
+mqtt_topic_mic_angle = "micanglearrival" 
 
 """ Initialisation of the Mic Array """
 # Find the ReSpeaker in the list of devices connected.
@@ -85,6 +88,11 @@ def _run_voice_detection_angle():
                 global scaled_voice_detection_angle_to_255
                 scaled_voice_detection_angle_to_255 = voice_detection_angle_to_360 / 360 * 255
             time.sleep(0.3)
+
+            publish(mqtt_topic_mic_angle, {
+                "mic_direction_of_arrival": voice_detection_angle_to_360,
+            })
+
         except KeyboardInterrupt:
             break
         if _is_direction_of_arrival_stop_thread_flag:
