@@ -11,7 +11,9 @@ enum Commands {
     CMD_BINMOUTH = 9,
     CMD_REQUESTMICANGLE = 10,
     CMD_REQUESTOBJCOORDS = 11,
-    CMD_REQUESTNAMECALLED = 12
+    CMD_REQUESTNAMECALLED = 12,
+    //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
+    CMD_SENDMESSAGE = 14
 }
 
 enum DistanceSensors {
@@ -137,6 +139,19 @@ namespace Binbot {
     export function sendName(name: string): void {
 
       sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
+
+    }
+
+    /**
+    * Send simple message to slack bot
+    * @param message message to send to slack bot
+    */
+    //% block
+    //% slackMsg.length.min=0 slackMsg.length.max= 12 slackMsg.length.defl="HelloWorld"
+
+    export function sendMessage(slackMsg: string): void {
+
+      sendPacket(createStringPacket(Commands.CMD_SENDMESSAGE, slackMsg))
 
     }
 
