@@ -187,32 +187,49 @@ namespace Binbot {
     }
 
     /**
-    * Request Mic Angle
+    * Request mic angle detected
     * @param sensor requests angle at which sound was detected
     */
     //% block
     export function requestMicAngle(): void {
-
         let res: Buffer;
-        let x: number = 0;
-        //let y: number = 0;
-
-        sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
+        
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 1, 0, 0))
         res = receivePacket()
         if (res != null) {
-            //console.log("Response: "+ res)
-            x = res.getNumber(NumberFormat.Int32LE, 0)
-            //console.log(x)
-            //A - B = 0 - 360
-            //C - D = 0- 255
-            micDirectionOfArival = (x / 255) * 360
-            //console.log(y)
-            //return Math.abs(y)
+            micDirectionOfArival = ((res.getNumber(NumberFormat.Int32LE, 0)) / 255) * 360
         }
         else {
             console.log("Error requesting sensor data")
         }
     }
+
+    /**
+    * Request Mic Angle
+    * @param sensor requests angle at which sound was detected
+    */
+    //% block
+    // export function requestMicAngle(): void {
+
+    //     let res: Buffer;
+    //     let x: number = 0;
+
+    //     sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
+    //     res = receivePacket()
+    //     if (res != null) {
+    //         //console.log("Response: "+ res)
+    //         x = res.getNumber(NumberFormat.Int32LE, 0)
+    //         //console.log(x)
+    //         //A - B = 0 - 360
+    //         //C - D = 0- 255
+    //         micDirectionOfArival = (x / 255) * 360
+    //         //console.log(y)
+    //         //return Math.abs(y)
+    //     }
+    //     else {
+    //         console.log("Error requesting sensor data")
+    //     }
+    // }
 
     /**
     * Returns the angle from which the mic detected its keyword
