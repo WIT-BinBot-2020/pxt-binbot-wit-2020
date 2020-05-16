@@ -10,7 +10,10 @@ enum Commands {
     CMD_SENDMICTHRESHOLD = 8,
     CMD_BINMOUTH = 9,
     CMD_REQUESTMICANGLE = 10,
-    CMD_REQUESTOBJCOORDS = 11
+    CMD_REQUESTOBJCOORDS = 11,
+    CMD_REQUESTNAMECALLED = 12,
+    //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
+    CMD_SENDMESSAGE = 14
 }
 
 enum DistanceSensors {
@@ -46,25 +49,30 @@ enum MouthState{
 }
 
 enum Sounds {
-    //% block="Mouth Open 0"
-    SOUND_ZERO = 0,
-    //% block="Mouth Close 1"
-    SOUND_ONE = 1,
-    //% block="Robot Stop 2"
-    SOUND_TWO = 2,
-    //% block="Shut down 3"
-    SOUND_THREE = 3,
-    //% block="Start Up 4"
-    SOUND_FOUR = 4,
-    //% block="Sound 5"
-    //SOUND_FIVE = 5,
-    //% block="Sound 6"
-    //SOUND_SIX = 6,
-    //% block="Sound 7"
-    //SOUND_SEVEN = 7,
-    //% block="Sound 8"
-    //SOUND_EIGHT = 8
+    //% block="Burp"
+    BURP = 0,
+    //% block="Eat"
+    EAT = 1,
+    //% block="Mad"
+    MAD = 2,
+    //% block="Happy"
+    HAPPY = 3,
+    //% block="Mouth open"
+    MOUTH_OPEN = 4,
+    //% block="Mouth closed"
+    MOUTH_CLOSE = 5,
+    //% block="Robot stop"
+    ROBOT_STOP = 6,
+    //% block="Shutdown"
+    SHUTDOWN = 7,
+    //% block="Startup"
+    STARTUP = 8
 }
+
+let micDirectionOfArival: number = 0
+let voiceDetected: number = 0
+let objX: number = 0
+let objY: number = 0
 
 /**
  * Custom blocks
@@ -135,7 +143,20 @@ namespace Binbot {
     }
 
     /**
-    * Send name
+    * Send simple message to slack bot
+    * @param message message to send to slack bot
+    */
+    //% block
+    //% slackMsg.length.min=0 slackMsg.length.max= 12 slackMsg.length.defl="HelloWorld"
+
+    export function sendMessage(slackMsg: string): void {
+
+      sendPacket(createStringPacket(Commands.CMD_SENDMESSAGE, slackMsg))
+
+    }
+
+    /**
+    * Send mic threshold
     * @param name set volume threshold for bot
     */
     //% block
@@ -170,51 +191,129 @@ namespace Binbot {
     * @param sensor requests angle at which sound was detected
     */
     //% block
-    export function requestMicAngle(): number {
+    export function requestMicAngle(): void {
 
         let res: Buffer;
         let x: number = 0;
-        let A: number = 0;
-        let B: number = 255;
-        let C: number = 0;
-        let D: number = 360;
+        //let y: number = 0;
 
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
+            //console.log("Response: "+ res)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
+            //console.log(x)
             //A - B = 0 - 360
             //C - D = 0- 255
-            let y = (x - A)/(B - A) * (D - C) + C
-            return y
+            micDirectionOfArival = (x / 255) * 360
+            //console.log(y)
+            //return Math.abs(y)
         }
         else {
             console.log("Error requesting sensor data")
-            return null
         }
+    }
+
+    /**
+    * Returns the angle from which the mic detected its keyword
+    */
+    //% block
+    export function micAngleDetected():number {
+      return micDirectionOfArival
     }
 
     /**
     * Request Object Coords
     */
     //% block
-    export function requestObjectCoords(): tuple {
+    export function requestObjectCoords(): void {
 
         let res: Buffer;
-        let x: number;
-        let y: number;
         sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
-            y = res.getNumber(NumberFormat.Int32LE, 8)
-            let coords: [x, y];
+            //console.log("Response: "+ res)
+            objX = res.getNumber(NumberFormat.Int32LE, 0)
+            objY = res.getNumber(NumberFormat.Int32LE, 4)
+            //console.log(objX, objY)
         }
         else {
             console.log("Error requesting sensor data")
-            return null
         }
     }
+
+    /**
+    * Returns object x
+    */
+    //% block
+    export function objectX():number {
+      return objX
+    }
+
+    /**
+    * Returns object y
+    */
+    //% block
+    export function objectY():number {
+      return objY
+    }
+
+    // /**
+    // * Request Voice Detected
+    // * @param sensor requests whether or not the voice command was detected
+    // */
+    // //% block
+    // export function requestVoiceDetected(): void {
+    //
+    //     let res: Buffer;
+    //
+    //     sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
+    //     res = receivePacket()
+    //     if (res != null) {
+    //         //console.log("Response: "+ res)
+    //         voiceDetected = res.getNumber(NumberFormat.Int32LE, 0)
+    //         //console.log(x)
+    //     }
+    //     else {
+    //         console.log("Error requesting sensor data")
+    //     }
+    // }
+
+    /**
+    * Request Voice Detected but we reset it to 0 in da code
+    */
+    //% block
+    export function requestVoiceDetected(): void {
+
+        let res: Buffer;
+        sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
+        res = receivePacket()
+        if (res != null) {
+            //console.log("Response: "+ res)
+            voiceDetected = res.getNumber(NumberFormat.Int32LE, 0)
+            //console.log(x)
+        }
+        else {
+            console.log("Error requesting sensor data")
+        }
+    }
+
+    /**
+    * Set voiceDetected back to 0
+    */
+    //% block
+    export function resetVoiceDetected(): void {
+      voiceDetected = 0;
+    }
+
+    /**
+    * Returns voiceDetected
+    */
+    //% block
+    export function keywordDetected(): number {
+      return voiceDetected
+    }
+
 
     export function sendNumbers(x: number, y: number, z: number): void {
 
@@ -322,6 +421,7 @@ namespace Binbot {
                 }
 
                 if (checksum == 0) {
+                    //console.log(buf.slice(3, 12))
                     return buf.slice(3, 12)
                 }
                 else {
