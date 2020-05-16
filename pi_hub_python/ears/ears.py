@@ -1,22 +1,28 @@
 # ReSpeaker Microphone Array v2.0 Code for BinBot
-# Author: Jon Gillespie | References at Base
+# Author: Jon Gillespie
 # Waterford Institute of Technology
 # IOT Applications in the Robotics Lab
 
-
+# EARS : Manages all listening capabilities of the BinBot, which, can determine the angle of arrival of 
+#        a human's voice and recognise keywords.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# NOTE: FOR USE WITHIN THE RPI HUB
 # Two seperate threads are created:
 #   1. Thread One: Angle of Voice Detection
-#           > Access this variable by reading the global : "ears.scaled_voice_detection_angle"
-#       A. VAD Threshold Set
-#           > Sets the above thread's voice detection threshold, higher for crowded spaces is best.
+#      > Access this variable by reading the global : "ears.scaled_voice_detection_angle"
+#      > Publishes the angle to the mqtt cloud feed every 6th cycle
+#      - VAD Threshold Set : set_vad_threshold(make_code_requested_vad_threshold)
+#        > Sets the above thread's voice detection threshold, higher for crowded spaces is best.
+#        > Expects an Int (0-255) and will scale it up to 0-1000 for the Mic array. 
+#      - VAG Get Threshold : ears.get_scaled_vad_threshold()
+#        > Returns the scaled version of the threshold (0-255)
 #   2. Thread Two: Keyword Recognition
-#       A. TODO
+#      > Set a new Keyword : ears.add_user_keyword(keyword)
+#      > Get all the Keywords : ears.get_user_keywords()
+#      > Determines if any Keywords have been said : "has_recognised_keyword"
+#      > Sends the Keyword to the Cloud via MQTT upon recognition
 #
-# MAKECODE
-# - Must scale up the voice detection angle to 0-360 from 0-255
-#
+# MAKECODE Note
+# - Must scale up the voice detection angle to 0-360 from 0-255 to present the user with accurate angles
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 import speech_recognition as sr
@@ -26,8 +32,8 @@ import time
 import usb.util
 import usb.core
 from .tuning import Tuning
+from pi_monitoring_scripts.pub_data import publish
 print("EARS | Loading Ears.py Script")
-
 
 """ User's Keywords for Keyword Recognition """
 # Format: ("word", threshold) ... threshold is between 0 and 1. Closer to 0 is more false positives.
@@ -45,6 +51,8 @@ scaled_vad_threshold_to_255 = vad_threshold / 1000 * 255
 
 """ Private Global Variables """
 vad_range_max = 1000  # Limit Set by MicArray Tuning
+mqtt_topic_mic_angle = "micAngleArrival"
+mqtt_topic_keyword = "micKeyword"  
 
 """ Initialisation of the Mic Array """
 # Find the ReSpeaker in the list of devices connected.
@@ -56,7 +64,7 @@ while not dev:
 if dev:
     print("EARS | Setting Up          | Found Mic Array")
     Mic_tuning = Tuning(dev)
-    # Mic_tuning.set_HPFONOFF(3) I think this has to run on the CLI as param
+    # Mic_tuning.set_HPFONOFF(3) # For the CLI as param
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -71,6 +79,7 @@ def _run_voice_detection_angle():
     """ Private: create a thread to poll the Mic Array and set the DOA Global Variable """
     print("EARS | Voice Detection     | Voice Detection Loop Starting")
     print("EARS | Voice Detection     | VAD: ", vad_threshold)
+    mqtt_trigger_counter = 0
     # Mic_tuning.set_vad_threshold(vad_threshold)
     while True:
         global _is_direction_of_arrival_stop_thread_flag
@@ -85,6 +94,13 @@ def _run_voice_detection_angle():
                 global scaled_voice_detection_angle_to_255
                 scaled_voice_detection_angle_to_255 = voice_detection_angle_to_360 / 360 * 255
             time.sleep(0.3)
+            # Simple Trigger to Publish the DOA every 6th loop (0.3 * 6) ~1.8 seconds
+            mqtt_trigger_counter += 1
+            if mqtt_trigger_counter == 6:
+                publish(mqtt_topic_mic_angle, {
+                    "mic_direction_of_arrival": voice_detection_angle_to_360
+                })
+                mqtt_trigger_counter = 0
         except KeyboardInterrupt:
             break
         if _is_direction_of_arrival_stop_thread_flag:
@@ -187,6 +203,8 @@ def _keyword_recognition():
                     # print("EARS | Keyword Recognition | * * KEYWORD RECOGNISED * * Google Found:  {}".format(sphinx_value))
                     global has_recognised_keyword
                     has_recognised_keyword = True
+                    # Publish the Keyword to the MQTT Broker
+                    publish(mqtt_topic_keyword, { "mic_keyword": sphinx_value })
                 except sr.UnknownValueError:
                     print(
                         "EARS | Keyword Recognition | *EXCEPTION* Unknown Value Heard...")
