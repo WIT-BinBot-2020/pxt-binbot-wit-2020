@@ -136,20 +136,20 @@ namespace Binbot {
     * @param name name to set for the bot i.e Alexa
     */
     //% block
-    export function sendName(name: string): void {
+    export function setKeyword(name: string): void {
 
       sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
 
     }
 
     /**
-    * Send simple message to slack bot
+    * Send simple message to slack bot, note only meassages of 9 or lower characters are accepted
     * @param message message to send to slack bot
     */
     //% block
     //% slackMsg.length.min=0 slackMsg.length.max= 12 slackMsg.length.defl="HelloWorld"
 
-    export function sendMessage(slackMsg: string): void {
+    export function sendSlackMessage(slackMsg: string): void {
 
       sendPacket(createStringPacket(Commands.CMD_SENDMESSAGE, slackMsg))
 
@@ -160,7 +160,7 @@ namespace Binbot {
     * @param name set volume threshold for bot
     */
     //% block
-    export function sendMicThreshold(threshold: number): void {
+    export function setMicThreshold(threshold: number): void {
 
       let min: number = 0;
       let max: number = 255;
@@ -180,7 +180,7 @@ namespace Binbot {
     * @param mouthState
     */
     //% block
-    export function sendMouthX(mouthState: MouthState): void {
+    export function setMouthState(mouthState: MouthState): void {
 
       sendPacket(createNumberPacket(Commands.CMD_BINMOUTH, mouthState, 0, 0))
 
@@ -226,7 +226,7 @@ namespace Binbot {
     * Request Object Coords
     */
     //% block
-    export function requestObjectCoords(): void {
+    export function requestObjectCoordinates(): void {
 
         let res: Buffer;
         sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
@@ -246,7 +246,7 @@ namespace Binbot {
     * Returns object x
     */
     //% block
-    export function objectX():number {
+    export function detectedObjectX():number {
       return objX
     }
 
@@ -254,7 +254,7 @@ namespace Binbot {
     * Returns object y
     */
     //% block
-    export function objectY():number {
+    export function detectedObjectY():number {
       return objY
     }
 
@@ -283,7 +283,7 @@ namespace Binbot {
     * Request Voice Detected but we reset it to 0 in da code
     */
     //% block
-    export function requestVoiceDetected(): void {
+    export function requestKeywordDetectedStatus(): void {
 
         let res: Buffer;
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
@@ -302,15 +302,15 @@ namespace Binbot {
     * Set voiceDetected back to 0
     */
     //% block
-    export function resetVoiceDetected(): void {
+    export function resetKeywordDetectedStatus(): void {
       voiceDetected = 0;
     }
 
     /**
-    * Returns voiceDetected
+    * Returns voiceDetected either 1 or a 0
     */
     //% block
-    export function keywordDetected(): number {
+    export function keywordDetectedStatus(): number {
       return voiceDetected
     }
 
