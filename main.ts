@@ -12,11 +12,7 @@ enum Commands {
     CMD_REQUESTMICANGLE = 10,
     CMD_REQUESTOBJCOORDS = 11,
     CMD_REQUESTNAMECALLED = 12,
-<<<<<<< HEAD
     //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
-=======
-    // CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
->>>>>>> 9c901dd32fcb2824a45a88690217aefbcb6ce7bc
     CMD_SENDMESSAGE = 14
 }
 
@@ -199,10 +195,7 @@ namespace Binbot {
 
         let res: Buffer;
         let x: number = 0;
-<<<<<<< HEAD
         //let y: number = 0;
-=======
->>>>>>> 9c901dd32fcb2824a45a88690217aefbcb6ce7bc
 
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
