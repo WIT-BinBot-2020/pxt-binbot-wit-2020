@@ -20,7 +20,7 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 import speech_recognition as sr
-import threading
+import multiprocessing
 import logging
 import time
 import usb.util
@@ -134,7 +134,7 @@ def set_vad_threshold(make_code_requested_vad_threshold):
 
 
 """ Set the target for the direction_of_arrival Thread """
-_direction_of_arrival_thread = threading.Thread(
+_direction_of_arrival_thread = multiprocessing.Process(
     target=_run_voice_detection_angle, daemon=True)
 
 
@@ -218,7 +218,7 @@ def _keyword_recognition():
 
 
 """ Set the target for the Keyword Recognition Thread """
-_keyword_recognition_thread = threading.Thread(
+_keyword_recognition_thread = multiprocessing.Process(
     target=_keyword_recognition, daemon=True)
 
 
