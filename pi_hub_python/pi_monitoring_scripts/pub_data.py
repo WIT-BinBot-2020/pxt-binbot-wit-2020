@@ -32,10 +32,10 @@ def publish(measurement, json_data):
 
 # Test Code - Uncomment for testing"
 
-data = {
-    "message": "Test",
-    }
+#data = {
+#    "message": "Test",
+#    }
 
-publish("messages", data)
+#publish("messages", data)
 
 
