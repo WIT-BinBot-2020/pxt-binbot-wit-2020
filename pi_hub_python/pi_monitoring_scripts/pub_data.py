@@ -12,27 +12,30 @@ def on_publish(client,userdata,result):
 
 
 def publish(measurement, json_data):
-
-    # Create connection object
-    client1= paho.Client("control1")   
-
-    # Define which message is called when data is published
-    client1.on_publish = on_publish                        
-	
-    # Connect to the broker
-    client1.connect(broker,port)
-
-    # Publish data to the broker. Be sure to use json.dumps to convert the json data to a string
-    ret= client1.publish("binBot/"+measurement, json.dumps(json_data))
     
-    client1.disconnect()
+    try:
+        # Create connection object
+        client1= paho.Client("control1")   
+
+        # Define which message is called when data is published
+        client1.on_publish = on_publish                        
+	
+        # Connect to the broker
+        client1.connect(broker,port)
+
+        # Publish data to the broker. Be sure to use json.dumps to convert the json data to a string
+        ret = client1.publish("binBot/"+measurement, json.dumps(json_data))
+    except:
+        print("Error Publishing Data")
+    finally: 
+        client1.disconnect()
 
 # Test Code - Uncomment for testing"
 
-#data = {
-#    "message": "Test",
-#    }
+data = {
+    "message": "Test",
+    }
 
-#publish("messages", data)
+publish("messages", data)
 
 
