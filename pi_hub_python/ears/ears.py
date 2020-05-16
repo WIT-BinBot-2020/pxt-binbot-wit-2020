@@ -99,7 +99,7 @@ def _run_voice_detection_angle():
                       voice_detection_angle_to_360)
                 # Convert the angle to the byte size scale (0-360 to 0-255)
                 global scaled_voice_detection_angle_to_255
-                scaled_voice_detection_angle_to_255 = voice_detection_angle_to_360 / 360 * 255
+                scaled_voice_detection_angle_to_255 = int(voice_detection_angle_to_360 / 360 * 255)
             # Briefly sleep to prevent unecessary runaway
             time.sleep(0.3)
             # Simple Trigger to Publish the DOA every 6th loop (0.3 * 6) ~1.8 seconds
