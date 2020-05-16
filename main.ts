@@ -13,7 +13,8 @@ enum Commands {
     CMD_REQUESTOBJCOORDS = 11,
     CMD_REQUESTNAMECALLED = 12,
     //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
-    CMD_SENDMESSAGE = 14
+    CMD_SENDMESSAGE = 14,
+    CMD_GETMICANGLE = 15
 }
 
 enum DistanceSensors {
@@ -212,6 +213,16 @@ namespace Binbot {
         else {
             console.log("Error requesting sensor data")
         }
+    }
+
+    /**
+    * Request Mic Angle
+    * @param sensor requests angle at which sound was detected
+    */
+    //% block
+    export function getMicAngle(): void {
+      
+        sendPacket(createNumberPacket(Commands.CMD_GETMICANGLE, 0, 0, 0))
     }
 
     /**
