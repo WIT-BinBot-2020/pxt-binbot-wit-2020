@@ -39,6 +39,7 @@ COMMANDS = [
     "CMD_REQUESTNAMECALLED", #= 12
     "", #= 13
     "CMD_SENDMESSAGE", #= 14
+    "CMD_GETMICANGLE" #=15
 ]
 
 """ Private Global Variables """
@@ -140,7 +141,15 @@ while True:
 
 
     # - - - EARS - - -
+    # NOTE: This command is now depreciated
     elif cmd == "CMD_REQUESTMICANGLE":
+        print("RPi Hub | Request direction of arrival angle data from the Mic Array")
+        print("RPi Hub | This command is depreciated, please use 'CMD_GETMICANGLE'.")
+        # doa_angle = ears.get_scaled_voice_detection_angle()
+        # print("RPi Hub | Direction of arrival angle to be sent back: %d" % doa_angle)
+        # microbitGatewaySerial.write(packet_encoding.CreateNumberPacket(_cmd, doa_angle, 0, 0))
+
+    elif cmd == "CMD_GETMICANGLE":
         print("RPi Hub | Request direction of arrival angle data from the Mic Array")
         doa_angle = ears.get_scaled_voice_detection_angle()
         print("RPi Hub | Direction of arrival angle to be sent back: %d" % doa_angle)
