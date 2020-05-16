@@ -227,8 +227,10 @@ def _keyword_recognition():
                     # print("EARS | Keyword Recognition | * * KEYWORD RECOGNISED * * Google Found:  {}".format(sphinx_value))
                     global has_recognised_keyword
                     has_recognised_keyword = True
+                    # In the case of multi match: "BinBot, BinBot, BinBot" we only want to send the first instance of the sentence
+                    single_keyword_method = sphinx_value.split()
                     # Publish the Keyword to the MQTT Broker (event based)
-                    publish(mqtt_topic_keyword, { "mic_keyword": sphinx_value })
+                    publish(mqtt_topic_keyword, { "mic_keyword": single_keyword_method[0] })
                 except sr.UnknownValueError:
                     print(
                         "EARS | Keyword Recognition | *EXCEPTION* Unknown Value Heard...")
