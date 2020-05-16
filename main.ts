@@ -221,8 +221,26 @@ namespace Binbot {
     */
     //% block
     export function getMicAngle(): void {
-      
-        sendPacket(createNumberPacket(Commands.CMD_GETMICANGLE, 0, 0, 0))
+
+      let res: Buffer;
+      let x: number = 0;
+      //let y: number = 0;
+
+      sendPacket(createNumberPacket(Commands.CMD_GETMICANGLE, 0, 0, 0))
+      res = receivePacket()
+      if (res != null) {
+          //console.log("Response: "+ res)
+          x = res.getNumber(NumberFormat.Int32LE, 0)
+          //console.log(x)
+          //A - B = 0 - 360
+          //C - D = 0- 255
+          micDirectionOfArival = (x / 255) * 360
+          //console.log(y)
+          //return Math.abs(y)
+      }
+      else {
+          console.log("Error requesting sensor data")
+      }
     }
 
     /**
