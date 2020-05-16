@@ -41,6 +41,10 @@ COMMANDS = [
     "CMD_SENDMESSAGE", #= 14
 ]
 
+""" Private Global Variables """
+mqtt_topic_send_message_command = "messages"
+mqtt_topic_commands = "commands"  
+
 """ Establishing serial connection to Microbit Gateway for R/W messages  """
 microbitGatewaySerial = False
 while not microbitGatewaySerial:
@@ -187,11 +191,12 @@ while True:
         print("RPi Hub | Sending message to Slack Bot")
         messageFromMakeCode = rcv_msg.str1
         print("RPi Hub | Message to be sent to Slack Bot: %s" % messageFromMakeCode)
-
-        data = { "message": messageFromMakeCode }
-        measurement = "messages" 
-        publish(measurement, data)
+        publish(mqtt_topic_send_message_command, { "message": messageFromMakeCode })
 
 
     else:
         print("RPi Hub | Valid incoming message but invalid command")
+
+    
+    # After all necessary operations performed, publish the command to the Cloud for diagnostics
+    publish(mqtt_topic_commands, { "command": cmd })
