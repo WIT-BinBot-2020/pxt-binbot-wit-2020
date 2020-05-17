@@ -12,7 +12,7 @@ enum Commands {
     CMD_REQUESTMICANGLE = 10,
     CMD_REQUESTOBJCOORDS = 11,
     CMD_REQUESTNAMECALLED = 12,
-    //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
+    //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy 2020"
     CMD_SENDMESSAGE = 14,
     CMD_GETMICANGLE = 15
 }

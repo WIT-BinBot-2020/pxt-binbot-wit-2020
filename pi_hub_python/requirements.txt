@@ -1,7 +1,9 @@
 setuptools
-paho-mqtt
 pyusb==1.0.2
 psutil
+speech_recognition
 pyaudio
 wave
 adafruit-circuitpython-servokit
+spidev
+paho-mqtt
