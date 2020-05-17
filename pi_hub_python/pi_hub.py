@@ -198,7 +198,12 @@ while True:
     # - - - CLOUD - - -
     elif cmd == "CMD_SENDMESSAGE":
         print("RPi Hub | Sending message to Slack Bot")
+
         messageFromMakeCode = rcv_msg.str1
+        # Message may be sent as a number rather than a string, check if it is
+        if not rcv_msg.num1 == 0:
+            messageFromMakeCode = "Number sent from RPi Hub: %s" % rcv_msg.num1
+
         print("RPi Hub | Message to be sent to Slack Bot: %s" % messageFromMakeCode)
         publish(mqtt_topic_send_message_command, { "message": messageFromMakeCode })
 
