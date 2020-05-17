@@ -72,8 +72,7 @@ enum Sounds {
 
 let micDirectionOfArival: number = 0
 let voiceDetected: number = 0
-let objX: number = 0
-let objY: number = 0
+let objectDetected: number = 0
 
 /**
  * Custom blocks
@@ -252,18 +251,17 @@ namespace Binbot {
     }
 
     /**
-    * Request Object Coords
+    * Request whether Object is Detected
     */
     //% block
-    export function requestObjectCoordinates(): void {
+    export function requestObjectDetected(): void {
 
         let res: Buffer;
         sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             //console.log("Response: "+ res)
-            objX = res.getNumber(NumberFormat.Int32LE, 0)
-            objY = res.getNumber(NumberFormat.Int32LE, 4)
+            objectDetected = res.getNumber(NumberFormat.Int32LE, 0)
             //console.log(objX, objY)
         }
         else {
@@ -272,19 +270,11 @@ namespace Binbot {
     }
 
     /**
-    * Returns object x
+    * Returns object status i.e 1 = object detected, 0 = no object detected
     */
     //% block
-    export function detectedObjectX():number {
-      return objX
-    }
-
-    /**
-    * Returns object y
-    */
-    //% block
-    export function detectedObjectY():number {
-      return objY
+    export function objectDetectedStatus():number {
+      return objectDetected
     }
 
     // /**
