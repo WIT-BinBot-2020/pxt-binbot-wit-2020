@@ -258,12 +258,16 @@ namespace Binbot {
     export function requestObjectCoordinates(): void {
 
         let res: Buffer;
+        let x: number = 0;
+        let y: number = 0;
         sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
             //console.log("Response: "+ res)
-            objX = res.getNumber(NumberFormat.Int32LE, 0)
-            objY = res.getNumber(NumberFormat.Int32LE, 4)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
+            objX = (x / 255) * 320
+            y = res.getNumber(NumberFormat.Int32LE, 4)
+            objY = (y / 255) * 240
             //console.log(objX, objY)
         }
         else {
