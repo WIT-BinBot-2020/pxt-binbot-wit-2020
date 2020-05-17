@@ -7,5 +7,5 @@ eyes.start_object_detection_thread()
 
 # Constantly print out the most recently detected object's coordinates
 while True:
-   coordinates = eyes.get_recently_found_object_coordinates()
-   print("eyes-test.py | Object Coordinates Found X%s Y%s" % (coordinates[0], coordinates[1]))
+   currently_detecting_object = eyes.get_is_currently_detecting_object()
+   print("eyes-test.py | Object Detection Status: %s" % (currently_detecting_object and "True" or "False"))
