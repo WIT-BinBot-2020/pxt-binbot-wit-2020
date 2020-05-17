@@ -26,7 +26,8 @@ while True:
 # NOTE: FOR USE WITHIN THE RPI HUB
 # One thread is created:
 #   1. Thread One: Object Detection
-#           > Access coordinates of most recently found object by reading the global : "eyes_test.most_recent_object_coordinates"
+#           > Access object detection status by reading the global: "eyes.currently_detecting_object"
+#           > DEPRECIATED: Access coordinates of most recently found object by reading the global : "eyes.most_recent_object_coordinates"
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -39,6 +40,7 @@ print("EYES | Loading Eyes-Test.py Script")
 
 """ Public Global Variables set by the Use Case #1 thread and available for reference publicly """
 most_recent_object_coordinates = [ False, False ]
+currently_detecting_object = False
 
 """ Private Global Variables """
 OPENMV_SERIAL_PORT = "/dev/serial/by-id/usb-OpenMV_OpenMV_Virtual_Comm_Port_in_FS_Mode_000000000011-if00"
@@ -59,9 +61,14 @@ if ser:
 # TEMP USE CASE #1: OBJECT DETECTION
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+def get_is_currently_detecting_object():
+   return currently_detecting_object
+
+# NOTE: Depreciated function
 def get_recently_found_object_coordinates():
    return most_recent_object_coordinates
 
+# NOTE: Depreciated function
 def on_object_found(eyesStr):
    """ Private: set the most recently found object's coordinates to the global 'most_recent_object_coordinates' """
    print("Eyes | Object Detection    | Object detected with coordinates")
@@ -73,12 +80,12 @@ def on_object_found(eyesStr):
         coordinates_found.append(int(t))
     except ValueError:
         pass
-   # Set result to global variable
+   # Set coordinate result to global variable
    global most_recent_object_coordinates
    most_recent_object_coordinates = [ coordinates_found[0], coordinates_found[1] ]
 
 def _run_object_detection():
-   """ Private: create a thread to continuously set recently found object coordinates from the OpenMV Camera """
+   """ Private: create a thread to continuously set recently found object coordinates and detection status from the OpenMV Camera """
    print("Eyes | Object Detection    | Object Detection Loop Start")
 
    while True:
@@ -87,8 +94,17 @@ def _run_object_detection():
          eyes = ser.readline()
          if len(eyes) == 0:
             print("Eyes | Object Detection    | Sleeping.. No object detected.")
+
+            # No object detected -> set result to global variable
+            global currently_detecting_object
+            currently_detecting_object = False
          else:
-            on_object_found(eyes)
+            # Detected object -> set result to global variable
+            global currently_detecting_object
+            currently_detecting_object = True
+
+            # NOTE: Depreciated function
+            # on_object_found(eyes)
       except KeyboardInterrupt:
             break
       if _object_detection_stop_thread_flag:
