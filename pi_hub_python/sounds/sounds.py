@@ -1,6 +1,10 @@
 import pyaudio
 import wave
 import threading
+from pi_monitoring_scripts.pub_data import publish
+
+# MQTT Broker Key for sending the frequency of sounds being played
+mqtt_topic_sound_played = "soundPlayed"
 
 print("sounds.py | Loading Sounds.py Script")
 
@@ -103,6 +107,9 @@ start_play_sound_thread()
 
 """ Public function that a user calls in order to play a new sound """
 def play_sound(sound_number):
+    # Send sound being played to the Cloud for counting frequency
+    publish(mqtt_topic_sound_played, { "sound_played": sound_number })
+
     # Change globals to indicate that a new sound should be played
     global current_sound_number
     current_sound_number = sound_number
