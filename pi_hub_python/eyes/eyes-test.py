@@ -2,6 +2,8 @@
 import time
 import eyes
 
+eyes.start_object_detection_thread()
+
 # Listen for the input, exit if nothing received in timeout period. 
 while True:
    coordinates = eyes.get_recently_found_object_coordinates()
