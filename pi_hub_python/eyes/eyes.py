@@ -77,7 +77,8 @@ def on_object_found(eyesStr):
    global most_recent_object_coordinates
    most_recent_object_coordinates = [
       int((coordinates_found[0] / 320) * 255),
-      int((coordinates_found[1] / 240) * 255)
+      69    
+      # int((coordinates_found[1] / 240) * 255)
    ]
 
 def _run_object_detection():
