@@ -14,7 +14,8 @@ enum Commands {
     CMD_REQUESTNAMECALLED = 12,
     //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy 2020"
     CMD_SENDMESSAGE = 14,
-    CMD_GETMICANGLE = 15
+    CMD_GETMICANGLE = 15,
+    CMD_SENDMESSAGENUM = 16
 }
 
 enum DistanceSensors {
@@ -165,7 +166,7 @@ namespace Binbot {
 
     export function sendSlackMessageNumber(slackMsgInt: number): void {
 
-      sendPacket(createNumberPacket(Commands.CMD_SENDMESSAGE, slackMsgInt, 0 , 0))
+      sendPacket(createNumberPacket(Commands.CMD_SENDMESSAGENUM, slackMsgInt, 0 , 0))
 
     }
 
@@ -205,28 +206,28 @@ namespace Binbot {
     * @param sensor requests angle at which sound was detected
     */
     //% block
-    export function requestMicAngle(): void {
+    // export function requestMicAngle(): void {
 
-        let res: Buffer;
-        let x: number = 0;
-        //let y: number = 0;
+    //     let res: Buffer;
+    //     let x: number = 0;
+    //     //let y: number = 0;
 
-        sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
-        res = receivePacket()
-        if (res != null) {
-            //console.log("Response: "+ res)
-            x = res.getNumber(NumberFormat.Int32LE, 0)
-            //console.log(x)
-            //A - B = 0 - 360
-            //C - D = 0- 255
-            micDirectionOfArival = (x / 255) * 360
-            //console.log(y)
-            //return Math.abs(y)
-        }
-        else {
-            console.log("Error requesting sensor data")
-        }
-    }
+    //     sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
+    //     res = receivePacket()
+    //     if (res != null) {
+    //         //console.log("Response: "+ res)
+    //         x = res.getNumber(NumberFormat.Int32LE, 0)
+    //         //console.log(x)
+    //         //A - B = 0 - 360
+    //         //C - D = 0- 255
+    //         micDirectionOfArival = (x / 255) * 360
+    //         //console.log(y)
+    //         //return Math.abs(y)
+    //     }
+    //     else {
+    //         console.log("Error requesting sensor data")
+    //     }
+    // }
 
     /**
     * Request Mic Angle
