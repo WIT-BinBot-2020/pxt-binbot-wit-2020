@@ -64,7 +64,7 @@ def get_recently_found_object_coordinates():
 
 def on_object_found(eyesStr):
    """ Private: set the most recently found object's coordinates to the global 'most_recent_object_coordinates' """
-   print("Eyes | Object Detection    | Object detected with coordinates")
+   # print("Eyes | Object Detection    | Object detected with coordinates")
 
    # Parsing coordinates from string input
    coordinates_found = []
@@ -73,13 +73,14 @@ def on_object_found(eyesStr):
         coordinates_found.append(int(t))
     except ValueError:
         pass
-   # Set result to global variable - Note that the X and Y values are scaled to 0->255
-   global most_recent_object_coordinates
-   most_recent_object_coordinates = [
-      int((coordinates_found[0] / 320) * 255),
-      69    
-      # int((coordinates_found[1] / 240) * 255)
-   ]
+
+   if len(coordinates_found) == 2:
+      # Set result to global variable - Note that the X and Y values are scaled to 0->255
+      global most_recent_object_coordinates
+      most_recent_object_coordinates = [
+         int((coordinates_found[0] / 320) * 255),
+         int((coordinates_found[1] / 240) * 255)
+      ]
 
 def _run_object_detection():
    """ Private: create a thread to continuously set recently found object coordinates from the OpenMV Camera """
