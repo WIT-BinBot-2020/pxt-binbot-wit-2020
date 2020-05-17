@@ -11,7 +11,10 @@ enum Commands {
     CMD_BINMOUTH = 9,
     CMD_REQUESTMICANGLE = 10,
     CMD_REQUESTOBJCOORDS = 11,
-    CMD_REQUESTNAMECALLED = 12
+    CMD_REQUESTNAMECALLED = 12,
+    //CMD_SENDMESSAGE = 13 "Don't use 13, it gives bad vibes - Andy Wong 2020"
+    CMD_SENDMESSAGE = 14,
+    CMD_GETMICANGLE = 15
 }
 
 enum DistanceSensors {
@@ -47,27 +50,30 @@ enum MouthState{
 }
 
 enum Sounds {
-    //% block="Mouth Open 0"
-    SOUND_ZERO = 0,
-    //% block="Mouth Close 1"
-    SOUND_ONE = 1,
-    //% block="Robot Stop 2"
-    SOUND_TWO = 2,
-    //% block="Shut down 3"
-    SOUND_THREE = 3,
-    //% block="Start Up 4"
-    SOUND_FOUR = 4,
-    //% block="Sound 5"
-    //SOUND_FIVE = 5,
-    //% block="Sound 6"
-    //SOUND_SIX = 6,
-    //% block="Sound 7"
-    //SOUND_SEVEN = 7,
-    //% block="Sound 8"
-    //SOUND_EIGHT = 8
+    //% block="Burp"
+    BURP = 0,
+    //% block="Eat"
+    EAT = 1,
+    //% block="Mad"
+    MAD = 2,
+    //% block="Happy"
+    HAPPY = 3,
+    //% block="Mouth open"
+    MOUTH_OPEN = 4,
+    //% block="Mouth closed"
+    MOUTH_CLOSE = 5,
+    //% block="Robot stop"
+    ROBOT_STOP = 6,
+    //% block="Shutdown"
+    SHUTDOWN = 7,
+    //% block="Startup"
+    STARTUP = 8
 }
 
+let micDirectionOfArival: number = 0
 let voiceDetected: number = 0
+let objX: number = 0
+let objY: number = 0
 
 /**
  * Custom blocks
@@ -131,9 +137,22 @@ namespace Binbot {
     * @param name name to set for the bot i.e Alexa
     */
     //% block
-    export function sendName(name: string): void {
+    export function setKeyword(name: string): void {
 
       sendPacket(createStringPacket(Commands.CMD_SENDNAME, name))
+
+    }
+
+    /**
+    * Send simple message to slack bot, note only meassages of 9 or lower characters are accepted
+    * @param message message to send to slack bot
+    */
+    //% block
+    //% slackMsg.length.min=0 slackMsg.length.max= 12 slackMsg.length.defl="HelloWorld"
+
+    export function sendSlackMessage(slackMsg: string): void {
+
+      sendPacket(createStringPacket(Commands.CMD_SENDMESSAGE, slackMsg))
 
     }
 
@@ -142,7 +161,7 @@ namespace Binbot {
     * @param name set volume threshold for bot
     */
     //% block
-    export function sendMicThreshold(threshold: number): void {
+    export function setMicThreshold(threshold: number): void {
 
       let min: number = 0;
       let max: number = 255;
@@ -162,7 +181,7 @@ namespace Binbot {
     * @param mouthState
     */
     //% block
-    export function sendMouthX(mouthState: MouthState): void {
+    export function setMouthState(mouthState: MouthState): void {
 
       sendPacket(createNumberPacket(Commands.CMD_BINMOUTH, mouthState, 0, 0))
 
@@ -173,92 +192,135 @@ namespace Binbot {
     * @param sensor requests angle at which sound was detected
     */
     //% block
-    export function requestMicAngle(): number {
+    export function requestMicAngle(): void {
 
         let res: Buffer;
         let x: number = 0;
-        let A: number = 0;
-        let B: number = 255;
-        let C: number = 0;
-        let D: number = 360;
+        //let y: number = 0;
 
         sendPacket(createNumberPacket(Commands.CMD_REQUESTMICANGLE, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
+            //console.log("Response: "+ res)
+            x = res.getNumber(NumberFormat.Int32LE, 0)
+            //console.log(x)
             //A - B = 0 - 360
             //C - D = 0- 255
-            let y = (x - A)/(B - A) * (D - C) + C
-            return y
+            micDirectionOfArival = (x / 255) * 360
+            //console.log(y)
+            //return Math.abs(y)
         }
         else {
             console.log("Error requesting sensor data")
-            return null
         }
+    }
+
+    /**
+    * Request Mic Angle
+    * @param sensor requests angle at which sound was detected
+    */
+    //% block
+    export function getMicAngle(): void {
+
+      let res: Buffer;
+      let x: number = 0;
+      //let y: number = 0;
+
+      sendPacket(createNumberPacket(Commands.CMD_GETMICANGLE, 0, 0, 0))
+      res = receivePacket()
+      if (res != null) {
+          //console.log("Response: "+ res)
+          x = res.getNumber(NumberFormat.Int32LE, 0)
+          //console.log(x)
+          //A - B = 0 - 360
+          //C - D = 0- 255
+          micDirectionOfArival = (x / 255) * 360
+          //console.log(y)
+          //return Math.abs(y)
+      }
+      else {
+          console.log("Error requesting sensor data")
+      }
+    }
+
+    /**
+    * Returns the angle from which the mic detected its keyword
+    */
+    //% block
+    export function micAngleDetected():number {
+      return micDirectionOfArival
     }
 
     /**
     * Request Object Coords
     */
     //% block
-    export function requestObjectCoords() {
+    export function requestObjectCoordinates(): void {
 
         let res: Buffer;
-        let x: number;
-        let y: number;
-        let coords: [number, number];
         sendPacket(createNumberPacket(Commands.CMD_REQUESTOBJCOORDS, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
-            y = res.getNumber(NumberFormat.Int32LE, 8)
-            coords = [x, y];
-            return coords
+            //console.log("Response: "+ res)
+            objX = res.getNumber(NumberFormat.Int32LE, 0)
+            objY = res.getNumber(NumberFormat.Int32LE, 4)
+            //console.log(objX, objY)
         }
         else {
             console.log("Error requesting sensor data")
-            return null
         }
     }
 
     /**
-    * Request Voice Detected
-    * @param sensor requests whether or not the voice command was detected
+    * Returns object x
     */
     //% block
-    export function requestVoiceDetected(): number {
-
-        let res: Buffer;
-        let x: number;
-
-        sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
-        res = receivePacket()
-        if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
-            return x
-        }
-        else {
-            console.log("Error requesting sensor data")
-            return null
-        }
+    export function detectedObjectX():number {
+      return objX
     }
+
+    /**
+    * Returns object y
+    */
+    //% block
+    export function detectedObjectY():number {
+      return objY
+    }
+
+    // /**
+    // * Request Voice Detected
+    // * @param sensor requests whether or not the voice command was detected
+    // */
+    // //% block
+    // export function requestVoiceDetected(): void {
+    //
+    //     let res: Buffer;
+    //
+    //     sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
+    //     res = receivePacket()
+    //     if (res != null) {
+    //         //console.log("Response: "+ res)
+    //         voiceDetected = res.getNumber(NumberFormat.Int32LE, 0)
+    //         //console.log(x)
+    //     }
+    //     else {
+    //         console.log("Error requesting sensor data")
+    //     }
+    // }
 
     /**
     * Request Voice Detected but we reset it to 0 in da code
     */
     //% block
-    export function requestVoiceDetected2ElectricBoogaloo(): void {
+    export function requestKeywordDetectedStatus(): void {
 
         let res: Buffer;
-        let x: number;
-
         sendPacket(createNumberPacket(Commands.CMD_REQUESTNAMECALLED, 0, 0, 0))
         res = receivePacket()
         if (res != null) {
-            x = res.getNumber(NumberFormat.Int32LE, 4)
-            if (x == 1) {
-              voiceDetected = 1;
-            }
+            //console.log("Response: "+ res)
+            voiceDetected = res.getNumber(NumberFormat.Int32LE, 0)
+            //console.log(x)
         }
         else {
             console.log("Error requesting sensor data")
@@ -269,10 +331,16 @@ namespace Binbot {
     * Set voiceDetected back to 0
     */
     //% block
-    export function setVoiceDetected(): void {
-
+    export function resetKeywordDetectedStatus(): void {
       voiceDetected = 0;
+    }
 
+    /**
+    * Returns voiceDetected either 1 or a 0
+    */
+    //% block
+    export function keywordDetectedStatus(): number {
+      return voiceDetected
     }
 
 
@@ -382,6 +450,7 @@ namespace Binbot {
                 }
 
                 if (checksum == 0) {
+                    //console.log(buf.slice(3, 12))
                     return buf.slice(3, 12)
                 }
                 else {
