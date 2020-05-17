@@ -157,6 +157,19 @@ namespace Binbot {
     }
 
     /**
+    * Send simple message number to slack bot, note only numbers between 0-255
+    * @param message message to send to slack bot
+    */
+    //% block
+    //% slackMsgInt.min=0 slackMsgInt.max= 255
+
+    export function sendSlackMessageNumber(slackMsgInt: number): void {
+
+      sendPacket(createNumberPacket(Commands.CMD_SENDMESSAGE, slackMsgInt, 0 , 0))
+
+    }
+
+    /**
     * Send mic threshold
     * @param name set volume threshold for bot
     */
