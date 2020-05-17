@@ -1,12 +1,8 @@
 #!/usr/bin/python
-import os, sys
-import serial
-
-ser = serial.Serial('/dev/serial/by-id/usb-OpenMV_Virtual_Comm_Port_in_FS_Mode_000000000011-if00', 19200, timeout = 5)
+import time
+import eyes
 
 # Listen for the input, exit if nothing received in timeout period. 
 while True:
-   eyes = ser.readline()
-   if len(eyes) == 0:
-      print("Sleeping.. No object detected. \n")
-   print eyes
+   coordinates = eyes.get_recently_found_object_coordinates()
+   print("eyes-test.py | Object Coordinates Detected (Scaled Down to 255) X%s Y%s" % (coordinates[0], coordinates[1]))
